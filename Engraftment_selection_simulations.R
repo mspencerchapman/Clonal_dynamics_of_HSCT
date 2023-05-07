@@ -1,11 +1,35 @@
-library(ape)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(readr)
-library(phytools)
-library(rsimpop)
-library(abc)
+#----------------------------------
+# Load packages (and install if they are not installed yet)
+#----------------------------------
+cran_packages=c("abc","ggridges","ggplot2","tidyr","dplyr","RColorBrewer","tibble","ape","dichromat","seqinr","stringr","readr","phytools","devtools","lme4","lmerTest")
+bioconductor_packages=c()
+
+for(package in cran_packages){
+  if(!require(package, character.only=T,quietly = T, warn.conflicts = F)){
+    install.packages(as.character(package),repos = "http://cran.us.r-project.org")
+    library(package, character.only=T,quietly = T, warn.conflicts = F)
+  }
+}
+if (!require("BiocManager", quietly = T, warn.conflicts = F))
+  install.packages("BiocManager")
+for(package in bioconductor_packages){
+  if(!require(package, character.only=T,quietly = T, warn.conflicts = F)){
+    BiocManager::install(as.character(package))
+    library(package, character.only=T,quietly = T, warn.conflicts = F)
+  }
+}
+if(!require("treemut", character.only=T,quietly = T, warn.conflicts = F)){
+  install_git("https://github.com/NickWilliamsSanger/treemut")
+  library("treemut",character.only=T,quietly = T, warn.conflicts = F)
+}
+if(!require("rsimpop", character.only=T,quietly = T, warn.conflicts = F)){
+  devtools::install_github("NickWilliamsSanger/rsimpop")
+  library("rsimpop",character.only=T,quietly = T, warn.conflicts = F)
+}
+
+#----------------------------------
+# Set the ggplot2 theme for plotting
+#----------------------------------
 
 my_theme<-theme(text = element_text(family="Helvetica"),
                 axis.text = element_text(size = 5),
@@ -16,17 +40,31 @@ my_theme<-theme(text = element_text(family="Helvetica"),
                 legend.spacing = unit(1,"mm"),
                 legend.key.size= unit(5,"mm"))
 
-root_dir<-ifelse(Sys.info()["sysname"] == "Darwin","~/R_work/Clonal_dynamics_of_HSCT","/lustre/scratch119/casm/team154pc/ms56/Zur_HSCT")
-R_functions_dir=ifelse(Sys.info()["sysname"] == "Darwin","~/R_work/my_functions","/lustre/scratch119/casm/team154pc/ms56/my_functions")
-tree_mut_dir=ifelse(Sys.info()["sysname"] == "Darwin","~/R_work/treemut","/lustre/scratch119/casm/team154pc/ms56/fetal_HSC/treemut")
-R_function_files=list.files(R_functions_dir,pattern=".R",full.names = T)
-sapply(R_function_files[-2],source)
+#----------------------------------
+# Set the root directory and read in the necessary files
+#----------------------------------
+
+root_dir<-"~/R_work/Clonal_dynamics_of_HSCT"
 source(paste0(root_dir,"/data/HSCT_functions.R"))
-setwd(tree_mut_dir); source("treemut.R");setwd(root_dir)
 plots_dir=paste0(root_dir,"/plots/")
 HDP_folder=paste0(root_dir,"/data/HDP")
 
-###-----------------SPECIFIC FUNCTIONS FOR THIS SCRIPT-----------------
+#Read in Pair metadata data frame
+Pair_metadata<-readr::read_csv(paste0(root_dir,"/data/Pair_metadata.csv"))
+Pair_metadata$Pair_new<-factor(Pair_metadata$Pair_new,levels=paste("Pair",1:nrow(Pair_metadata),sep = "_"))
+new_pair_names=Pair_metadata$Pair_new;names(new_pair_names)<-Pair_metadata$Pair
+
+#Define colour themes for the Pairs & DorR
+Pair_cols<-RColorBrewer::brewer.pal(10,"Paired"); names(Pair_cols)<-levels(Pair_metadata$Pair_new)
+DorR_cols<-RColorBrewer::brewer.pal(8,"Dark2")[1:2]; names(DorR_cols)<-c("D","R")
+
+#Read in the trees list for the ABC
+ABC.trees<-readRDS(paste0(root_dir,"/data/trees_for_ABC.Rds"))
+
+#----------------------------------
+# SPECIFIC FUNCTIONS FOR THIS SCRIPT
+#----------------------------------
+
 get_ltt = function(tree,time_points) {
   nodeheights <- nodeHeights(tree)
   ltt_tree = sapply(time_points, function(x) {
@@ -142,27 +180,14 @@ get_subsampled_tree2=function (tree, N, tips = tree$edge[c(which(tree$state == 0
   tmp
 }
 
-
-###-----------------Pair metadata & trees-----------------
-
-#Read in Pair metadata data frame
-Pair_metadata<-readr::read_csv(paste0(root_dir,"/data/Pair_metadata.csv"))
-Pair_metadata$Pair_new<-factor(Pair_metadata$Pair_new,levels=paste("Pair",1:nrow(Pair_metadata),sep = "_"))
-new_pair_names=paste("Pair",1:nrow(Pair_metadata),sep = "_") #Useful named vector to swap from old to new names
-names(new_pair_names)<-Pair_metadata%>%arrange(Age)%>%pull(Pair)
-
-#Define colour themes for the Pairs & DorR
-Pair_cols<-RColorBrewer::brewer.pal(10,"Paired"); names(Pair_cols)<-levels(Pair_metadata$Pair_new)
-DorR_cols<-RColorBrewer::brewer.pal(8,"Dark2")[1:2]; names(DorR_cols)<-c("D","R")
-
-#Read in the trees list for the ABC
-ABC.trees<-readRDS(paste0(root_dir,"/data/trees_for_ABC.Rds"))
-
-###--------------Get summary stats from the data-----------------
+#----------------------------------
+# GET SUMMARY STATISTICS FROM THE DATA
+#----------------------------------
 
 ##EXTRACT SUMMARY STATISTICS
 #(1) 3 LARGEST CLADES
 all.ss<-Map(tree=ABC.trees,pair=names(ABC.trees),function(tree,pair) {
+  cat(pair,sep="\n")
   donor_id<-get_DR_ids(tree)['donor_ID']
   recip_id<-get_DR_ids(tree)['recip_ID']
   
@@ -262,7 +287,9 @@ all.ss<-Map(tree=ABC.trees,pair=names(ABC.trees),function(tree,pair) {
   return(ss_comb)
 })
 
-#-------------IMPORT PARAMETERS AND SUMMARY STATISTICS FOR THE SIMULATIONS & PERFORM ABC ------------------------------
+#----------------------------------
+# IMPORT PARAMETERS AND SUMMARY STATISTICS FOR THE SIMULATIONS & PERFORM ABC
+#----------------------------------
 
 setwd(paste0(root_dir,"/data/ABC_simulation_results/Engrafting_cell_number_ABC_Engraftment_selection_simulation_results"))
 
@@ -307,9 +334,10 @@ param_posteriors<-lapply(names(ABC.trees),function(pair){
   return(as.data.frame(abc.res$adj.values)%>%gather(key="parameter",value="value")%>%mutate(PairID=pair,.before=1))
 })%>%bind_rows()
 
-#-------------------------VISUALIZE RESULTS - INCLUDING CORRELATION WITH OTHER HSCT PARAMETERS-----------------------------------
+#----------------------------------
+# VISUALIZE RESULTS - INCLUDING CORRELATION WITH OTHER HSCT PARAMETERS
+#----------------------------------
 
-library(ggridges)
 HSC_pop_posteriors_plot<-param_posteriors%>%
   mutate(PairID=factor(new_pair_names[PairID],levels=Pair_metadata$Pair_new[order(Pair_metadata$Age)]))%>%
   filter(parameter=="HSC_pop_size")%>%
@@ -387,7 +415,6 @@ HSCT_regression_df<-param_posteriors%>%
   left_join(Pair_metadata,by=c("PairID"="Pair_new"))%>%
   mutate(time_since_HSCT=Age-Age_at_transplant)
 
-
 lme.age<-lmerTest::lmer(log(value)~Age+(1|PairID),data=HSCT_regression_df)
 lme.age_at_HSCT<-lmerTest::lmer(log(value)~Age_at_transplant+(1|PairID),data=HSCT_regression_df)
 lme.CD34<-lmerTest::lmer(log(value)~CD34_dose+(1|PairID),data=HSCT_regression_df)
@@ -431,7 +458,9 @@ ggsave(filename = paste0(plots_dir,"ECN_by_CD34_ESim.pdf"),ECN_by_CD34,width=2.5
 ggsave(filename = paste0(plots_dir,"ECN_by_MNC_ESim.pdf"),ECN_by_MNC,width=2.5,height=2)
 ggsave(filename = paste0(plots_dir,"ECN_by_time_since_HSCT_ESim.pdf"),ECN_by_time_since_HSCT,width=3,height=2)
 
-#-----------------------------NOW DO POSTERIOR CHECKS OF SUMMARY STATISTICS----------------------------------------------
+#----------------------------------
+# NOW DO POSTERIOR CHECKS OF SUMMARY STATISTICS
+#----------------------------------
 
 #Function to condense the pre/ peri-HSCT coalesnces summary stats into D/R ratios
 condense_sumstats=function(sumstats) {

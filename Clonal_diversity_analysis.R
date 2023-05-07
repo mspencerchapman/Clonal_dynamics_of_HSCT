@@ -1,8 +1,8 @@
 #----------------------------------
 # Load packages (and install if they are not installed yet)
 #----------------------------------
-cran_packages=c("ggplot2","dplyr","RColorBrewer","tibble","ape","dichromat","seqinr","stringr","readr","phytools","devtools","lmerTest","clusterProfiler")
-bioconductor_packages=c()
+cran_packages=c("ggplot2","dplyr","RColorBrewer","tibble","ape","dichromat","seqinr","stringr","readr","phytools","devtools","lmerTest")
+bioconductor_packages=c("clusterProfiler")
 
 for(package in cran_packages){
   if(!require(package, character.only=T,quietly = T, warn.conflicts = F)){

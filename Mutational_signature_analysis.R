@@ -1,10 +1,35 @@
-library(ape)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(readr)
-library(phytools)
-library(hdp)
+#----------------------------------
+# Load packages (and install if they are not installed yet)
+#----------------------------------
+cran_packages=c("ggplot2","dplyr","RColorBrewer","tibble","ape","dichromat","seqinr","stringr","readr","phytools","devtools","lmerTest","pheatmap")
+bioconductor_packages=c("clusterProfiler")
+
+for(package in cran_packages){
+  if(!require(package, character.only=T,quietly = T, warn.conflicts = F)){
+    install.packages(as.character(package),repos = "http://cran.us.r-project.org")
+    library(package, character.only=T,quietly = T, warn.conflicts = F)
+  }
+}
+if (!require("BiocManager", quietly = T, warn.conflicts = F))
+  install.packages("BiocManager")
+for(package in bioconductor_packages){
+  if(!require(package, character.only=T,quietly = T, warn.conflicts = F)){
+    BiocManager::install(as.character(package))
+    library(package, character.only=T,quietly = T, warn.conflicts = F)
+  }
+}
+if(!require("treemut", character.only=T,quietly = T, warn.conflicts = F)){
+  install_git("https://github.com/NickWilliamsSanger/treemut")
+  library("treemut",character.only=T,quietly = T, warn.conflicts = F)
+}
+if(!require("hdp", character.only=T,quietly = T, warn.conflicts = F)){
+  devtools::install_github("nicolaroberts/hdp", build_vignettes = F)
+  library("hdp",character.only=T,quietly = T, warn.conflicts = F)
+}
+
+#----------------------------------
+# Set the ggplot2 themes for plotting
+#----------------------------------
 
 my_theme<-theme(text = element_text(family="Helvetica"),
                 axis.text = element_text(size = 5),
@@ -26,39 +51,62 @@ mut_sigs_theme=theme(strip.text.x = element_text(size=6,margin = margin(0.6,0,0.
                      legend.text = element_text(size=5),
                      legend.title = element_text(size=7),
                      legend.key.size=unit(2.5,"mm"),
-                     strip.background = element_rect(size=0.25),
+                     strip.background = element_rect(linewidth =0.25),
                      panel.grid.major = element_line(size=0.25),
-                     panel.border = element_rect(size=0.25))
+                     panel.border = element_rect(linewidth=0.25))
+
+#----------------------------------
+# Set the root directory and read in the necessary files
+#----------------------------------
 
 root_dir<-"~/R_work/Clonal_dynamics_of_HSCT"
-R_functions_dir=ifelse(Sys.info()["sysname"] == "Darwin","~/R_work/my_functions","/lustre/scratch119/casm/team154pc/ms56/my_functions")
-tree_mut_dir=ifelse(Sys.info()["sysname"] == "Darwin","~/R_work/treemut","/lustre/scratch119/casm/team154pc/ms56/fetal_HSC/treemut")
-R_function_files=list.files(R_functions_dir,pattern=".R",full.names = T)
-sapply(R_function_files[-2],source)
 source(paste0(root_dir,"/data/HSCT_functions.R"))
-setwd(tree_mut_dir); source("treemut.R");setwd(root_dir)
-vcf_header_path="~/R_work/Phylogeny_of_foetal_haematopoiesis/Data/vcfHeader.txt"
 plots_dir=paste0(root_dir,"/plots/")
 HDP_folder=paste0(root_dir,"/data/HDP")
+vcf_header_path=paste0(root_dir,"/data/vcfHeader.txt") #A dummy vcf header that can be used
 
 #Read in Pair metadata data frame
 Pair_metadata<-readr::read_csv(paste0(root_dir,"/data/Pair_metadata.csv"))
 Pair_metadata$Pair_new<-factor(Pair_metadata$Pair_new,levels=paste("Pair",1:nrow(Pair_metadata),sep = "_"))
-Pair_cols<-RColorBrewer::brewer.pal(10,"Paired")
-names(Pair_cols)<-levels(Pair_metadata$Pair_new)
-DorR_cols<-RColorBrewer::brewer.pal(8,"Dark2")[1:2]
-names(DorR_cols)<-c("D","R")
-  
+new_pair_names=Pair_metadata$Pair_new;names(new_pair_names)<-Pair_metadata$Pair
+
+#Define colour themes for the Pairs & DorR
+Pair_cols<-RColorBrewer::brewer.pal(10,"Paired"); names(Pair_cols)<-levels(Pair_metadata$Pair_new)
+DorR_cols<-RColorBrewer::brewer.pal(8,"Dark2")[1:2]; names(DorR_cols)<-c("D","R")
+
+#Read in Pair metadata data frame
+Pair_metadata<-readr::read_csv(paste0(root_dir,"/data/Pair_metadata.csv"))
+Pair_metadata$Pair_new<-factor(Pair_metadata$Pair_new,levels=paste("Pair",1:nrow(Pair_metadata),sep = "_"))
+
 #Read in other data objects
 sample_metadata<-readRDS(paste0(root_dir,"/data/sample_metadata_full.Rds"))
 trees_list<-readRDS(paste0(root_dir,"/data/tree_lists.Rds"))
-details_list<-readRDS(paste0(root_dir,"/data/details_lists.Rds"))
+details_lists<-readRDS(paste0(root_dir,"/data/details_lists.Rds"))
 
 #Extract objects from these lists in a 'for' loop
 for(x in names(trees_list)) {assign(x,trees_list[[x]])}
-for(x in names(details_list)) {assign(x,details_list[[x]])}
+for(x in names(details_lists)) {assign(x,details_lists[[x]])}
 
-#### MUTATIONAL SIGNATURE ANALYSIS USING HDP
+#Generate information regarding loss-of-Y in male samples from X and Y coverage data
+LOY_files=list.files(path=paste0(root_dir,"/data/LOY_files"),pattern="meanCoverage",full.names = T)
+male_PDIDs<-c("PD45792","PD45793","PD45794","PD45795")
+Y_loss_df=dplyr::bind_rows(lapply(LOY_files,read.delim))%>%
+  mutate(donor=substr(id,1,7))%>%
+  mutate(loss_of_Y=ifelse(!donor%in%male_PDIDs,NA,ifelse(y/x<0.15,"YES","NO")))
+
+#Read in the spreadsheet listing other copy number changes
+CN_change_df=read.csv("~/R_work/Zurich_HSCT/Data/Copy_number_changes.csv")
+
+#Read in mutational signature extraction data
+exposures_df=generate_exposures_df(HDP_multi_chain_RDS_path=paste0(HDP_folder,"/HDP_multi_chain.Rdata"),
+                                   trinuc_mut_mat_path=paste0(HDP_folder,"/trinuc_mut_mat.txt"),
+                                   key_table_path = paste0(HDP_folder,"/key_table.txt"))%>%dplyr::rename("Pair"=exp_ID)
+
+
+#----------------------------------
+# MUTATIONAL SIGNATURE ANALYSIS USING HDP
+#----------------------------------
+
 mut_example_multi=readRDS(paste0(HDP_folder,"/HDP_multi_chain.Rdata"))
 mutations=read.table(paste0(HDP_folder,"/trinuc_mut_mat.txt"))
 key_table=read.table(paste0(HDP_folder,"/key_table.txt"))
