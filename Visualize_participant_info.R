@@ -1,4 +1,18 @@
-library(ggplot2)
+#----------------------------------
+# Load packages (and install if they are not installed yet)
+#----------------------------------
+cran_packages=c("ggplot2","dplyr","RColorBrewer","tibble","stringr","readr","ggtext")
+
+for(package in cran_packages){
+  if(!require(package, character.only=T,quietly = T, warn.conflicts = F)){
+    install.packages(as.character(package),repos = "http://cran.us.r-project.org")
+    library(package, character.only=T,quietly = T, warn.conflicts = F)
+  }
+}
+
+l#----------------------------------
+# Set the ggplot2 theme for plotting
+#----------------------------------
 
 my_theme<-theme(text = element_text(family="Helvetica"),
                 axis.text = element_text(size = 5),
@@ -9,13 +23,19 @@ my_theme<-theme(text = element_text(family="Helvetica"),
                 legend.spacing = unit(1,"mm"),
                 legend.key.size= unit(5,"mm"))
 
-#Read in Pair metadata data frame
+#----------------------------------
+# Read in the necessary metadata
+#----------------------------------
+
 Pair_metadata<-readr::read_csv(paste0(root_dir,"/data/Pair_metadata.csv"))
 Pair_metadata$Pair_new<-factor(Pair_metadata$Pair_new,levels=paste("Pair",1:nrow(Pair_metadata),sep = "_"))
 Pair_cols<-RColorBrewer::brewer.pal(10,"Paired")
 names(Pair_cols)<-levels(Pair_metadata$Pair_new)
 
-#Summary visualization of the time course
+#----------------------------------
+# Summary visualization of the time course
+#----------------------------------
+
 plot.timecourse<-Pair_metadata%>%
   ggplot(aes(x=Pair_new,xend=Pair_new,y = Age_at_transplant,yend=Age))+
   #geom_segment(size=1,linetype=1,col="darkred")+

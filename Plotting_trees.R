@@ -1,10 +1,26 @@
-library(ape)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(readr)
-library(phytools)
-library(hdp)
+#----------------------------------
+# Load packages (and install if they are not installed yet)
+#----------------------------------
+cran_packages=c("ggplot2","dplyr","RColorBrewer","tibble","ape","dichromat","seqinr","stringr","readr","phytools","devtools","lmerTest","pheatmap")
+
+for(package in cran_packages){
+  if(!require(package, character.only=T,quietly = T, warn.conflicts = F)){
+    install.packages(as.character(package),repos = "http://cran.us.r-project.org")
+    library(package, character.only=T,quietly = T, warn.conflicts = F)
+  }
+}
+if(!require("treemut", character.only=T,quietly = T, warn.conflicts = F)){
+  install_git("https://github.com/NickWilliamsSanger/treemut")
+  library("treemut",character.only=T,quietly = T, warn.conflicts = F)
+}
+if(!require("hdp", character.only=T,quietly = T, warn.conflicts = F)){
+  devtools::install_github("nicolaroberts/hdp", build_vignettes = F)
+  library("hdp",character.only=T,quietly = T, warn.conflicts = F)
+}
+
+#----------------------------------
+# Set the ggplot2 themes for plotting
+#----------------------------------
 
 my_theme<-theme(text = element_text(family="Helvetica"),
                 axis.text = element_text(size = 5),
@@ -15,24 +31,28 @@ my_theme<-theme(text = element_text(family="Helvetica"),
                 legend.spacing = unit(1,"mm"),
                 legend.key.size= unit(5,"mm"))
 
+#----------------------------------
+# Set the root directory and read in the necessary files
+#----------------------------------
+
 root_dir<-"~/R_work/Clonal_dynamics_of_HSCT"
-R_functions_dir=ifelse(Sys.info()["sysname"] == "Darwin","~/R_work/my_functions","/lustre/scratch119/casm/team154pc/ms56/my_functions")
-tree_mut_dir=ifelse(Sys.info()["sysname"] == "Darwin","~/R_work/treemut","/lustre/scratch119/casm/team154pc/ms56/fetal_HSC/treemut")
-R_function_files=list.files(R_functions_dir,pattern=".R",full.names = T)
-sapply(R_function_files[-2],source)
 source(paste0(root_dir,"/data/HSCT_functions.R"))
-setwd(tree_mut_dir); source("treemut.R");setwd(root_dir)
-vcf_header_path="~/R_work/Phylogeny_of_foetal_haematopoiesis/Data/vcfHeader.txt"
 plots_dir=paste0(root_dir,"/plots/")
 HDP_folder=paste0(root_dir,"/data/HDP")
+vcf_header_path=paste0(root_dir,"/data/vcfHeader.txt") #A dummy vcf header that can be used
 
 #Read in Pair metadata data frame
 Pair_metadata<-readr::read_csv(paste0(root_dir,"/data/Pair_metadata.csv"))
 Pair_metadata$Pair_new<-factor(Pair_metadata$Pair_new,levels=paste("Pair",1:nrow(Pair_metadata),sep = "_"))
-Pair_cols<-RColorBrewer::brewer.pal(10,"Paired")
-names(Pair_cols)<-levels(Pair_metadata$Pair_new)
-DorR_cols<-RColorBrewer::brewer.pal(8,"Dark2")[1:2]
-names(DorR_cols)<-c("D","R")
+new_pair_names=Pair_metadata$Pair_new;names(new_pair_names)<-Pair_metadata$Pair
+
+#Define colour themes for the Pairs & DorR
+Pair_cols<-RColorBrewer::brewer.pal(10,"Paired"); names(Pair_cols)<-levels(Pair_metadata$Pair_new)
+DorR_cols<-RColorBrewer::brewer.pal(8,"Dark2")[1:2]; names(DorR_cols)<-c("D","R")
+
+#Read in Pair metadata data frame
+Pair_metadata<-readr::read_csv(paste0(root_dir,"/data/Pair_metadata.csv"))
+Pair_metadata$Pair_new<-factor(Pair_metadata$Pair_new,levels=paste("Pair",1:nrow(Pair_metadata),sep = "_"))
 
 #Read in other data objects
 sample_metadata<-readRDS(paste0(root_dir,"/data/sample_metadata_full.Rds"))
@@ -41,7 +61,7 @@ details_lists<-readRDS(paste0(root_dir,"/data/details_lists.Rds"))
 
 #Extract objects from these lists in a 'for' loop
 for(x in names(trees_list)) {assign(x,trees_list[[x]])}
-for(x in names(details_list)) {assign(x,details_list[[x]])}
+for(x in names(details_lists)) {assign(x,details_lists[[x]])}
 
 #Generate information regarding loss-of-Y in male samples from X and Y coverage data
 LOY_files=list.files(path=paste0(root_dir,"/data/LOY_files"),pattern="meanCoverage",full.names = T)
@@ -51,15 +71,17 @@ Y_loss_df=dplyr::bind_rows(lapply(LOY_files,read.delim))%>%
   mutate(loss_of_Y=ifelse(!donor%in%male_PDIDs,NA,ifelse(y/x<0.15,"YES","NO")))
 
 #Read in the spreadsheet listing other copy number changes
-CN_change_df=read.csv(paste0(root_dir,"/data/Copy_number_changes.csv"))
+CN_change_df=read.csv("~/R_work/Zurich_HSCT/Data/Copy_number_changes.csv")
 
 #Read in mutational signature extraction data
 exposures_df=generate_exposures_df(HDP_multi_chain_RDS_path=paste0(HDP_folder,"/HDP_multi_chain.Rdata"),
                                    trinuc_mut_mat_path=paste0(HDP_folder,"/trinuc_mut_mat.txt"),
                                    key_table_path = paste0(HDP_folder,"/key_table.txt"))%>%dplyr::rename("Pair"=exp_ID)
 
+#----------------------------------
+# "TREE GUIDE"
+#----------------------------------
 
-##-------------"TREE GUIDE"-------------------
 pdf(paste0(plots_dir,"Tree_guide3.pdf"),width=13,height=5)
 all.trees.ultra$Pair11=plot_tree(all.trees.ultra$Pair11,cex.label = 0,plot_axis=F,vspace.reserve=0.1,title="Pair_9")
 pair_age=74.8
@@ -89,6 +111,7 @@ temp=plot_tree_labels(all.trees.ultra$Pair11,
                       cex.label = 0.8,
                       lty=2,
                       lwd=2)
+
 axis(side=4,at=mean(get_mut_burden(all.trees.ultra$Pair11))-axis_at,labels = labels_at,las=2,cex.axis=0.7)
 transplant_time_median=muts_from_age(66,all.trees.ultra$Pair11,sampling_age=pair_age)
 #arrows(x0=-1,x1=1+length(all.trees.ultra[[i]]$tip.label),y0=mean(get_mut_burden(all.trees.ultra[[i]]))-transplant_time_median,y1=mean(get_mut_burden(all.trees.ultra[[i]]))-transplant_time_median,length=0,lty=2)
@@ -101,7 +124,9 @@ rect(xleft = -1,
      col=rgb(0.1,0.1,0.1,alpha=0.3),border = NA)
 dev.off()
 
-##-------------MAIN TREE VISUALIZATION-------------------
+#----------------------------------
+# MAIN TREE VISUALIZATION
+#----------------------------------
 
 #Plot all the adjusted COMBINED ultrametric trees showing the transplant period
 pdf(paste0(plots_dir,"All_plots.pdf"),width = 8,4)
@@ -190,7 +215,10 @@ temp=lapply(names(all.trees),function(pair){
   text(x = 0, y=-0.05*par()[['yaxp']][2],cex = 0.75,font=3,col="#00000095",paste0("Max contribution:",round(max(sig_in_samples),digits = 2)),pos = 4)
 })
 
-##-----------PLOT Separate DONOR and RECIPIENT TREE VISUALIZATIONS---------------------------
+#----------------------------------
+# PLOT Separate DONOR and RECIPIENT TREE VISUALIZATIONS
+#----------------------------------
+
 pdf(paste0(plots_dir,"D_R_phylos_separated_plots.pdf"),width = 12,4)
 par(mfrow=c(1,2))
 temp=lapply(paste0("Pair_",1:10),function(Pair_new) {
@@ -262,7 +290,10 @@ temp=lapply(paste0("Pair_",1:10),function(Pair_new) {
 })
 dev.off()
 
-##-----------PLOT TREES WITH ALL CODING/ TRUNCATING MUTATIONS---------------------------
+#----------------------------------
+# PLOT TREES WITH ALL CODING/ TRUNCATING MUTATIONS
+#----------------------------------
+
 #This is not for publication, but useful to get a sense of the kinds of coding mutations on the long shared branches
 #Occasionally there is a 'suspect' that seems the most likely to be implicated
 pdf(paste0(plots_dir,"All_plots_nonsense_mutations.pdf"),width = 15,8)
@@ -271,8 +302,8 @@ temp=lapply(paste0("Pair_",1:10),function(Pair_new) {
   pair=Pair_metadata$Pair[Pair_metadata$Pair_new==Pair_new]
   tree<-all.trees.ultra[[pair]]
   details<-all.muts.nodups[[pair]]
-  details$shared_coding_change=ifelse(details$coding_change=="Coding change" & !details$node%in%1:length(tree$tip.label) & grepl("\\*",details$variant_ID),"yes","no")
-  #details$shared_coding_change=ifelse(details$coding_change=="Coding change" & !details$node%in%1:length(tree$tip.label),"yes","no")
+  #details$shared_coding_change=ifelse(details$coding_change=="Coding change" & !details$node%in%1:length(tree$tip.label) & grepl("\\*",details$variant_ID),"yes","no")
+  details$shared_coding_change=ifelse(details$coding_change=="Coding change" & !details$node%in%1:length(tree$tip.label),"yes","no")
   pair_age_at_transplant<-Pair_metadata%>%dplyr::filter(Pair==pair)%>%pull(Age_at_transplant)
   pair_age<-Pair_metadata%>%dplyr::filter(Pair==pair)%>%pull(Age)
   
