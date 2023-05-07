@@ -1,0 +1,11 @@
+Pair,Pair_new,Age,Age_at_transplant,MNC_dose,CD34_dose,stem_cell_source,conditioning,donor_sex,recipient_sex
+Pair11,Pair_9,74.8,66,2.66,1.56,BM,MAC,Male,Male
+Pair13,Pair_7,65.5,36,4.17,NA,BM,MAC,Male,Male
+Pair21,Pair_5,64.5,50,16.28,7.1,PBSC,RIC,Female,Female
+Pair24,Pair_1,34.2,18,NA,7.9,PBSC,MAC,Female,Female
+Pair25,Pair_4,58.4,47,10.94,8.97,PBSC,RIC,Male,Male
+Pair28,Pair_10,79.9,63,13.9,2.4,PBSC,RIC,Female,Female
+Pair31,Pair_6,65.2,43,NA,NA,BM,MAC,Female,Female
+Pair38,Pair_8,65.8,35,4.05,NA,BM,MAC,Female,Female
+Pair40,Pair_3,51.9,35,2.48,NA,BM,MAC,Female,Female
+Pair41,Pair_2,42.4,30,15.01,4.51,PBSC,MAC,Female,Male
