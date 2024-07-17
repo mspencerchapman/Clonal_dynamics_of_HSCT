@@ -1,0 +1,372 @@
+##fileformat=VCFv4.1
+##INFO=<ID=VD,Number=1,Type=String,Description="Vagrent Default Annotation">
+##INFO=<ID=VW,Number=1,Type=String,Description="Vagrent Most Deleterious Annotation">
+##INFO=<ID=VT,Number=1,Type=String,Description="Variant type based on the Vagrent Default Annotation">
+##INFO=<ID=VC,Number=.,Type=String,Description="Variant consequence based on the Vagrent Default Annotation">
+##cavemanVersion=1.13.14
+##contig=<ID=1,assembly=NCBI37,length=249250621,species=Human>
+##contig=<ID=2,assembly=NCBI37,length=243199373,species=Human>
+##contig=<ID=3,assembly=NCBI37,length=198022430,species=Human>
+##contig=<ID=4,assembly=NCBI37,length=191154276,species=Human>
+##contig=<ID=5,assembly=NCBI37,length=180915260,species=Human>
+##contig=<ID=6,assembly=NCBI37,length=171115067,species=Human>
+##contig=<ID=7,assembly=NCBI37,length=159138663,species=Human>
+##contig=<ID=8,assembly=NCBI37,length=146364022,species=Human>
+##contig=<ID=9,assembly=NCBI37,length=141213431,species=Human>
+##contig=<ID=10,assembly=NCBI37,length=135534747,species=Human>
+##contig=<ID=11,assembly=NCBI37,length=135006516,species=Human>
+##contig=<ID=12,assembly=NCBI37,length=133851895,species=Human>
+##contig=<ID=13,assembly=NCBI37,length=115169878,species=Human>
+##contig=<ID=14,assembly=NCBI37,length=107349540,species=Human>
+##contig=<ID=15,assembly=NCBI37,length=102531392,species=Human>
+##contig=<ID=16,assembly=NCBI37,length=90354753,species=Human>
+##contig=<ID=17,assembly=NCBI37,length=81195210,species=Human>
+##contig=<ID=18,assembly=NCBI37,length=78077248,species=Human>
+##contig=<ID=19,assembly=NCBI37,length=59128983,species=Human>
+##contig=<ID=20,assembly=NCBI37,length=63025520,species=Human>
+##contig=<ID=21,assembly=NCBI37,length=48129895,species=Human>
+##contig=<ID=22,assembly=NCBI37,length=51304566,species=Human>
+##contig=<ID=X,assembly=NCBI37,length=155270560,species=Human>
+##contig=<ID=Y,assembly=NCBI37,length=59373566,species=Human>
+##contig=<ID=MT,assembly=NCBI37,length=16569,species=Human>
+##contig=<ID=GL000207.1,assembly=NCBI37,length=4262,species=Human>
+##contig=<ID=GL000226.1,assembly=NCBI37,length=15008,species=Human>
+##contig=<ID=GL000229.1,assembly=NCBI37,length=19913,species=Human>
+##contig=<ID=GL000231.1,assembly=NCBI37,length=27386,species=Human>
+##contig=<ID=GL000210.1,assembly=NCBI37,length=27682,species=Human>
+##contig=<ID=GL000239.1,assembly=NCBI37,length=33824,species=Human>
+##contig=<ID=GL000235.1,assembly=NCBI37,length=34474,species=Human>
+##contig=<ID=GL000201.1,assembly=NCBI37,length=36148,species=Human>
+##contig=<ID=GL000247.1,assembly=NCBI37,length=36422,species=Human>
+##contig=<ID=GL000245.1,assembly=NCBI37,length=36651,species=Human>
+##contig=<ID=GL000197.1,assembly=NCBI37,length=37175,species=Human>
+##contig=<ID=GL000203.1,assembly=NCBI37,length=37498,species=Human>
+##contig=<ID=GL000246.1,assembly=NCBI37,length=38154,species=Human>
+##contig=<ID=GL000249.1,assembly=NCBI37,length=38502,species=Human>
+##contig=<ID=GL000196.1,assembly=NCBI37,length=38914,species=Human>
+##contig=<ID=GL000248.1,assembly=NCBI37,length=39786,species=Human>
+##contig=<ID=GL000244.1,assembly=NCBI37,length=39929,species=Human>
+##contig=<ID=GL000238.1,assembly=NCBI37,length=39939,species=Human>
+##contig=<ID=GL000202.1,assembly=NCBI37,length=40103,species=Human>
+##contig=<ID=GL000234.1,assembly=NCBI37,length=40531,species=Human>
+##contig=<ID=GL000232.1,assembly=NCBI37,length=40652,species=Human>
+##contig=<ID=GL000206.1,assembly=NCBI37,length=41001,species=Human>
+##contig=<ID=GL000240.1,assembly=NCBI37,length=41933,species=Human>
+##contig=<ID=GL000236.1,assembly=NCBI37,length=41934,species=Human>
+##contig=<ID=GL000241.1,assembly=NCBI37,length=42152,species=Human>
+##contig=<ID=GL000243.1,assembly=NCBI37,length=43341,species=Human>
+##contig=<ID=GL000242.1,assembly=NCBI37,length=43523,species=Human>
+##contig=<ID=GL000230.1,assembly=NCBI37,length=43691,species=Human>
+##contig=<ID=GL000237.1,assembly=NCBI37,length=45867,species=Human>
+##contig=<ID=GL000233.1,assembly=NCBI37,length=45941,species=Human>
+##contig=<ID=GL000204.1,assembly=NCBI37,length=81310,species=Human>
+##contig=<ID=GL000198.1,assembly=NCBI37,length=90085,species=Human>
+##contig=<ID=GL000208.1,assembly=NCBI37,length=92689,species=Human>
+##contig=<ID=GL000191.1,assembly=NCBI37,length=106433,species=Human>
+##contig=<ID=GL000227.1,assembly=NCBI37,length=128374,species=Human>
+##contig=<ID=GL000228.1,assembly=NCBI37,length=129120,species=Human>
+##contig=<ID=GL000214.1,assembly=NCBI37,length=137718,species=Human>
+##contig=<ID=GL000221.1,assembly=NCBI37,length=155397,species=Human>
+##contig=<ID=GL000209.1,assembly=NCBI37,length=159169,species=Human>
+##contig=<ID=GL000218.1,assembly=NCBI37,length=161147,species=Human>
+##contig=<ID=GL000220.1,assembly=NCBI37,length=161802,species=Human>
+##contig=<ID=GL000213.1,assembly=NCBI37,length=164239,species=Human>
+##contig=<ID=GL000211.1,assembly=NCBI37,length=166566,species=Human>
+##contig=<ID=GL000199.1,assembly=NCBI37,length=169874,species=Human>
+##contig=<ID=GL000217.1,assembly=NCBI37,length=172149,species=Human>
+##contig=<ID=GL000216.1,assembly=NCBI37,length=172294,species=Human>
+##contig=<ID=GL000215.1,assembly=NCBI37,length=172545,species=Human>
+##contig=<ID=GL000205.1,assembly=NCBI37,length=174588,species=Human>
+##contig=<ID=GL000219.1,assembly=NCBI37,length=179198,species=Human>
+##contig=<ID=GL000224.1,assembly=NCBI37,length=179693,species=Human>
+##contig=<ID=GL000223.1,assembly=NCBI37,length=180455,species=Human>
+##contig=<ID=GL000195.1,assembly=NCBI37,length=182896,species=Human>
+##contig=<ID=GL000222.1,assembly=NCBI37,length=186861,species=Human>
+##contig=<ID=GL000200.1,assembly=NCBI37,length=187035,species=Human>
+##contig=<ID=GL000193.1,assembly=NCBI37,length=189789,species=Human>
+##contig=<ID=GL000194.1,assembly=NCBI37,length=191469,species=Human>
+##contig=<ID=GL000225.1,assembly=NCBI37,length=211173,species=Human>
+##contig=<ID=GL000192.1,assembly=NCBI37,length=547496,species=Human>
+##contig=<ID=NC_007605,assembly=NCBI37,length=171823,species=Human>
+##contig=<ID=hs37d5,assembly=NCBI37,length=35477943,species=Human>
+##fileDate=230919=GL000212.1,assembly=NCBI37,length=186858,species=Human>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+1	152845503	.	G	A	.	.	.
+1	162859899	.	C	T	.	.	.
+1	169532183	.	C	T	.	.	.
+1	173783625	.	C	T	.	.	.
+1	173903020	.	G	A	.	.	.
+1	180639655	.	C	T	.	.	.
+1	189322137	.	C	T	.	.	.
+1	194131490	.	C	T	.	.	.
+1	199188042	.	G	A	.	.	.
+1	199968754	.	G	A	.	.	.
+1	240608150	.	G	A	.	.	.
+1	24947325	.	C	T	.	.	.
+1	76165995	.	C	T	.	.	.
+1	82950338	.	C	T	.	.	.
+1	98780308	.	C	T	.	.	.
+10	111914337	.	G	A	.	.	.
+10	116876375	.	G	A	.	.	.
+10	119036471	.	C	T	.	.	.
+10	130360054	.	C	T	.	.	.
+10	15657001	.	G	A	.	.	.
+10	58586655	.	G	A	.	.	.
+10	65682340	.	C	T	.	.	.
+11	100057023	.	C	T	.	.	.
+11	27963588	.	C	T	.	.	.
+11	32012569	.	C	T	.	.	.
+11	35749089	.	C	T	.	.	.
+11	46962101	.	G	A	.	.	.
+11	60244907	.	G	A	.	.	.
+11	84168776	.	C	T	.	.	.
+11	91007301	.	G	A	.	.	.
+11	9530746	.	G	A	.	.	.
+12	102491388	.	C	T	.	.	.
+12	116984947	.	C	T	.	.	.
+12	11725477	.	C	T	.	.	.
+12	121208473	.	C	T	.	.	.
+12	124482508	.	G	A	.	.	.
+12	15164883	.	C	T	.	.	.
+12	41130569	.	G	A	.	.	.
+12	50136416	.	C	T	.	.	.
+12	52238605	.	C	T	.	.	.
+12	74257678	.	G	A	.	.	.
+12	82276089	.	G	A	.	.	.
+12	84732664	.	C	T	.	.	.
+12	90098769	.	C	T	.	.	.
+12	93606872	.	G	A	.	.	.
+13	108145443	.	C	T	.	.	.
+13	21180839	.	G	A	.	.	.
+13	21418895	.	G	A	.	.	.
+13	23278162	.	G	A	.	.	.
+13	38413104	.	G	A	.	.	.
+13	62370451	.	G	A	.	.	.
+13	65012177	.	C	T	.	.	.
+13	72602119	.	G	A	.	.	.
+13	82509155	.	C	T	.	.	.
+13	91927271	.	C	T	.	.	.
+14	22152052	.	C	T	.	.	.
+14	46333717	.	G	A	.	.	.
+14	47636821	.	G	A	.	.	.
+14	53902208	.	C	T	.	.	.
+14	70990154	.	G	A	.	.	.
+14	72010114	.	G	A	.	.	.
+14	78629466	.	C	T	.	.	.
+14	79477304	.	G	A	.	.	.
+14	80037195	.	C	T	.	.	.
+14	98221627	.	G	A	.	.	.
+15	33278516	.	G	A	.	.	.
+15	37788898	.	C	T	.	.	.
+15	43139124	.	G	A	.	.	.
+15	43474453	.	G	A	.	.	.
+15	46573550	.	C	T	.	.	.
+15	62927634	.	G	A	.	.	.
+15	73856491	.	G	A	.	.	.
+15	77145393	.	C	T	.	.	.
+15	78496971	.	C	T	.	.	.
+15	92789050	.	G	A	.	.	.
+16	47860485	.	C	T	.	.	.
+16	52047592	.	G	A	.	.	.
+16	5823271	.	G	A	.	.	.
+16	61333283	.	G	A	.	.	.
+16	62116028	.	G	A	.	.	.
+16	62648346	.	G	A	.	.	.
+16	65447374	.	C	T	.	.	.
+16	82320873	.	G	A	.	.	.
+16	89906187	.	G	A	.	.	.
+17	12361505	.	C	T	.	.	.
+17	17539729	.	G	A	.	.	.
+17	51249072	.	G	A	.	.	.
+17	54105347	.	C	T	.	.	.
+17	77435181	.	C	T	.	.	.
+18	1442100	.	G	A	.	.	.
+18	18641758	.	G	A	.	.	.
+18	20703741	.	G	A	.	.	.
+18	27903461	.	C	T	.	.	.
+18	28662269	.	C	T	.	.	.
+18	29183696	.	C	T	.	.	.
+18	37866128	.	C	T	.	.	.
+18	47216684	.	C	T	.	.	.
+18	53457890	.	C	T	.	.	.
+18	55854165	.	C	T	.	.	.
+18	56028416	.	C	T	.	.	.
+18	67531694	.	G	A	.	.	.
+19	13155574	.	G	A	.	.	.
+19	29705197	.	C	T	.	.	.
+19	36631291	.	C	T	.	.	.
+19	53817992	.	C	T	.	.	.
+19	58176579	.	C	T	.	.	.
+19	7273261	.	C	T	.	.	.
+2	113759302	.	G	A	.	.	.
+2	131612934	.	G	A	.	.	.
+2	138677103	.	G	A	.	.	.
+2	143292949	.	C	T	.	.	.
+2	14760246	.	C	T	.	.	.
+2	149212172	.	G	A	.	.	.
+2	167440020	.	G	A	.	.	.
+2	171020506	.	G	A	.	.	.
+2	179440961	.	G	A	.	.	.
+2	181055988	.	G	A	.	.	.
+2	190002171	.	G	A	.	.	.
+2	202277306	.	C	T	.	.	.
+2	202604613	.	C	T	.	.	.
+2	21841997	.	G	A	.	.	.
+2	218634669	.	C	T	.	.	.
+2	223522421	.	C	T	.	.	.
+2	36579374	.	C	T	.	.	.
+2	37364008	.	C	T	.	.	.
+2	37473062	.	G	A	.	.	.
+2	39919202	.	G	A	.	.	.
+2	42321244	.	G	A	.	.	.
+2	56671967	.	G	A	.	.	.
+2	57015244	.	C	T	.	.	.
+2	5899692	.	C	T	.	.	.
+2	63875845	.	C	T	.	.	.
+2	66716777	.	G	A	.	.	.
+2	7812267	.	G	A	.	.	.
+2	85364466	.	C	T	.	.	.
+20	19989028	.	C	T	.	.	.
+20	21095622	.	C	T	.	.	.
+20	24582493	.	C	T	.	.	.
+20	38747464	.	C	T	.	.	.
+20	49483629	.	C	T	.	.	.
+20	59235912	.	C	T	.	.	.
+20	6981669	.	G	A	.	.	.
+20	9118669	.	G	A	.	.	.
+21	20181086	.	G	A	.	.	.
+21	21016255	.	G	A	.	.	.
+21	38842013	.	C	T	.	.	.
+22	21260986	.	G	A	.	.	.
+22	31763643	.	G	A	.	.	.
+22	33684817	.	C	T	.	.	.
+3	115447645	.	C	T	.	.	.
+3	126196650	.	G	A	.	.	.
+3	17485640	.	C	T	.	.	.
+3	182006698	.	C	T	.	.	.
+3	190961782	.	G	A	.	.	.
+3	196373870	.	C	T	.	.	.
+3	35624765	.	C	T	.	.	.
+3	39002073	.	G	A	.	.	.
+3	58898526	.	C	T	.	.	.
+3	62240561	.	C	T	.	.	.
+3	67036021	.	G	A	.	.	.
+3	76370570	.	C	T	.	.	.
+3	97446601	.	C	T	.	.	.
+4	112438410	.	C	T	.	.	.
+4	115269026	.	C	T	.	.	.
+4	125273131	.	G	A	.	.	.
+4	133514547	.	C	T	.	.	.
+4	145125003	.	G	A	.	.	.
+4	146649344	.	G	A	.	.	.
+4	152675352	.	C	T	.	.	.
+4	157245065	.	G	A	.	.	.
+4	157654169	.	C	T	.	.	.
+4	158151042	.	G	A	.	.	.
+4	176461135	.	G	A	.	.	.
+4	176677786	.	G	A	.	.	.
+4	179056487	.	G	A	.	.	.
+4	180150685	.	C	T	.	.	.
+4	19512336	.	G	A	.	.	.
+4	20686150	.	C	T	.	.	.
+4	28957262	.	C	T	.	.	.
+4	31088022	.	C	T	.	.	.
+4	37604327	.	G	A	.	.	.
+4	38112184	.	C	T	.	.	.
+4	44388569	.	C	T	.	.	.
+4	58010023	.	G	A	.	.	.
+4	64164333	.	C	T	.	.	.
+4	94732070	.	C	T	.	.	.
+5	108859149	.	C	T	.	.	.
+5	130976095	.	G	A	.	.	.
+5	165704520	.	C	T	.	.	.
+5	178519488	.	G	A	.	.	.
+5	179774729	.	G	A	.	.	.
+5	23402786	.	C	T	.	.	.
+5	26154069	.	C	T	.	.	.
+5	30578458	.	G	A	.	.	.
+5	32976972	.	C	T	.	.	.
+5	33047346	.	C	T	.	.	.
+5	37400788	.	C	T	.	.	.
+5	39796167	.	G	A	.	.	.
+5	62167034	.	G	A	.	.	.
+5	73597811	.	C	T	.	.	.
+5	82083977	.	C	T	.	.	.
+5	84231980	.	C	T	.	.	.
+5	9728433	.	C	T	.	.	.
+5	99287748	.	G	A	.	.	.
+6	102045918	.	G	A	.	.	.
+6	103087022	.	G	A	.	.	.
+6	117738255	.	G	A	.	.	.
+6	118564833	.	G	A	.	.	.
+6	125237460	.	G	A	.	.	.
+6	129342598	.	C	T	.	.	.
+6	130010363	.	G	A	.	.	.
+6	136665586	.	C	T	.	.	.
+6	138749848	.	G	A	.	.	.
+6	140442472	.	C	T	.	.	.
+6	156883461	.	G	A	.	.	.
+6	44358078	.	G	A	.	.	.
+6	62663262	.	G	A	.	.	.
+6	66740900	.	C	T	.	.	.
+6	68769160	.	C	T	.	.	.
+6	81316033	.	C	T	.	.	.
+6	83393547	.	G	A	.	.	.
+7	101570188	.	C	T	.	.	.
+7	107028427	.	C	T	.	.	.
+7	107545446	.	G	A	.	.	.
+7	111044530	.	C	T	.	.	.
+7	119046885	.	C	T	.	.	.
+7	124836000	.	G	A	.	.	.
+7	34423838	.	C	T	.	.	.
+7	49111418	.	C	T	.	.	.
+7	63416475	.	C	T	.	.	.
+7	65692984	.	G	A	.	.	.
+7	66774607	.	G	A	.	.	.
+7	78106751	.	C	T	.	.	.
+7	83184929	.	C	T	.	.	.
+7	85733806	.	G	A	.	.	.
+7	94631856	.	G	A	.	.	.
+7	95515167	.	G	A	.	.	.
+8	103196708	.	G	A	.	.	.
+8	104061097	.	G	A	.	.	.
+8	105832208	.	C	T	.	.	.
+8	114502984	.	C	T	.	.	.
+8	129822660	.	C	T	.	.	.
+8	133694618	.	C	T	.	.	.
+8	136509134	.	C	T	.	.	.
+8	17266268	.	G	A	.	.	.
+8	1745380	.	C	T	.	.	.
+8	26298827	.	G	A	.	.	.
+8	51147449	.	G	A	.	.	.
+8	67099554	.	C	T	.	.	.
+8	75490705	.	G	A	.	.	.
+8	84299695	.	C	T	.	.	.
+8	91341796	.	C	T	.	.	.
+9	102687663	.	G	A	.	.	.
+9	126389653	.	C	T	.	.	.
+9	131719195	.	C	T	.	.	.
+9	16505132	.	G	A	.	.	.
+9	20137246	.	C	T	.	.	.
+9	22483146	.	G	A	.	.	.
+9	77247425	.	C	T	.	.	.
+9	77306800	.	G	A	.	.	.
+9	81128704	.	C	T	.	.	.
+9	91601873	.	G	A	.	.	.
+9	92911756	.	C	T	.	.	.
+9	9522635	.	C	T	.	.	.
+X	115407775	.	G	A	.	.	.
+X	124301653	.	G	A	.	.	.
+X	133672637	.	C	T	.	.	.
+X	134116074	.	C	T	.	.	.
+X	148226069	.	C	T	.	.	.
+X	15030040	.	G	A	.	.	.
+X	151130366	.	G	A	.	.	.
+X	21891260	.	C	T	.	.	.
+X	27960003	.	G	A	.	.	.
+X	34020749	.	G	A	.	.	.
+X	38152400	.	G	A	.	.	.
+X	39429641	.	C	T	.	.	.
+X	44972283	.	G	A	.	.	.
+X	55917751	.	C	T	.	.	.
+X	79178703	.	G	A	.	.	.
