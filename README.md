@@ -45,7 +45,7 @@ All generated plots are saved within the plots/ folder.
 
 # OTHER FOLDERS
 ## Original analysis scripts
-These are the original scripts used to analyse the data. They are not quite as 'tidy' as those within the '06 Generating_figures/' folder, but contain code for some additional plots and analyses that are not included in the manuscript.
+These are the original scripts used to analyse the data. They are not quite as 'tidy' as those within the '06 Generating_figures/' folder, and much of this is duplications of the same analyses. However, some scripts contain code for some additional plots and analyses that are not included in the manuscript and are therefore included for reference.
 
 ## Other simulation scripts
 Simulation scripts used for analyses other than the main 'engrafting cell number' ABC.
