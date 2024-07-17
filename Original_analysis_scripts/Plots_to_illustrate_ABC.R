@@ -1,7 +1,7 @@
 #Read in the posteriors from E. Mitchell et al, 2022 to use as the parameter distribution
-param_posterior<-read.delim(ifelse(Sys.info()["sysname"] == "Darwin",paste0(my_working_directory,"/data/posterior_sample.txt"),"/lustre/scratch119/casm/team154pc/ms56/Zur_HSCT/ABC_models/ABC_Apr2022/posterior_sample.txt"))
+param_posterior<-read.delim(ifelse(Sys.info()["sysname"] == "Darwin",paste0(my_working_directory,"/data/reference_files/HSC_population_posterior_sample.txt"),"/lustre/scratch119/casm/team154pc/ms56/Zur_HSCT/ABC_models/ABC_Apr2022/posterior_sample.txt"))
 these_params=colnames(param_posterior)
-HSC_pop_posteriors<-read.delim(ifelse(Sys.info()["sysname"] == "Darwin",paste0(my_working_directory,"/data/KX001_KX002_combined_Nt_posterior.txt"),"/lustre/scratch119/casm/team154pc/ms56/Zur_HSCT/ABC_models/ABC_Apr2022/KX001_KX002_combined_Nt_posterior.txt"),header = F)%>%
+HSC_pop_posteriors<-read.delim(ifelse(Sys.info()["sysname"] == "Darwin",paste0(my_working_directory,"/data/reference_files/driver_parameter_posterior_sample.txt"),"/lustre/scratch119/casm/team154pc/ms56/Zur_HSCT/ABC_models/ABC_Apr2022/KX001_KX002_combined_Nt_posterior.txt"),header = F)%>%
   dplyr::mutate("Parameter"="HSC_population_size",.before=1)%>%
   dplyr::rename("Value"=2)
 

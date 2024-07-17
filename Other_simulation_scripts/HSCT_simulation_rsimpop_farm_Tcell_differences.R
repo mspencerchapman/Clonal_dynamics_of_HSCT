@@ -55,10 +55,10 @@ if(!exists("opt")){
 
 root_dir<-"/lustre/scratch126/casm/team154pc/ms56/Clonal_dynamics_of_HSCT/" #Change this to wherever you have cloned the github directory
 
-tree_folder=paste0(root_dir,"data/trees_no_dups/")
-poseterior_parameters_file=paste0(root_dir,"data/posterior_sample.txt")
-HSC_pop_posteriors_file<-paste0(root_dir,"data/KX001_KX002_combined_Nt_posterior.txt")
-R_function_files=paste0(root_dir,"data/HSCT_functions.R")
+tree_folder=paste0(root_dir,"/data/trees_no_dups/")
+posterior_parameters_file=paste0(root_dir,"/data/reference_files/driver_parameter_posterior_sample.txt")
+HSC_pop_posteriors_file<-paste0(root_dir,"/data/reference_files/HSC_population_posterior_sample.txt")
+R_function_files=paste0(root_dir,"/data/HSCT_functions.R")
 source(R_function_files)
 setwd(root_dir)
 visualize=F
@@ -209,7 +209,7 @@ all.trees<-lapply(exp_nos,function(exp_no){
 names(all.trees)<-paste0("Pair",exp_nos)
 
 #Read in the posteriors from E. Mitchell et al, 2022 to use as the prior
-param_posterior<-read.delim(poseterior_parameters_file)
+param_posterior<-read.delim(posterior_parameters_file)
 HSC_pop_posteriors<-read.delim(HSC_pop_posteriors_file,header = F)
 
 ###-----------------Set up parameters for this simulation-----------------

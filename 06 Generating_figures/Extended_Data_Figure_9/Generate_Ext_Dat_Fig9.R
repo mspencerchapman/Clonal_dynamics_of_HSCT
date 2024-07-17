@@ -69,7 +69,7 @@ ABC.trees<-readRDS(paste0(root_dir,"/data/trees_for_ABC.Rds"))
 #Read in the posteriors from E. Mitchell et al, 2022 to use as the parameter distribution
 param_posterior<-read.delim(paste0(root_dir,"/data/reference_files/posterior_sample.txt"))
 these_params=colnames(param_posterior)
-HSC_pop_posteriors<-read.delim(paste0(root_dir,"/data/reference_files/KX001_KX002_combined_Nt_posterior.txt"),header = F)%>%
+HSC_pop_posteriors<-read.delim(paste0(root_dir,"/data/reference_files/driver_parameter_posterior_sample.txt"),header = F)%>%
   dplyr::mutate("Parameter"="HSC_population_size",.before=1)%>%
   dplyr::rename("Value"=2)
 
