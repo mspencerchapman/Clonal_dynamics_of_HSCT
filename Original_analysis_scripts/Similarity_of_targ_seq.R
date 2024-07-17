@@ -52,8 +52,8 @@ remove_names=function(x) {attr(x,"names")<-NULL;return(x)}
 
 consistency_fixed=F
 if(consistency_fixed) {
-  trees_list<-readRDS(paste0(root_dir,"/data/trees_and_muts_files/tree_lists.Rds"))
-  details_list<-readRDS(paste0(root_dir,"/data/trees_and_muts_files/details_lists.Rds"))
+  trees_list<-readRDS(paste0(root_dir,"/data/tree_and_mutation_files/tree_lists.Rds"))
+  details_list<-readRDS(paste0(root_dir,"/data/tree_and_mutation_files/details_lists.Rds"))
   
   #Extract objects from these lists in a 'for' loop
   for(x in names(trees_list)) {assign(x,trees_list[[x]])}

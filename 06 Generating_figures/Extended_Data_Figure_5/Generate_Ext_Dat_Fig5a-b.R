@@ -1,8 +1,8 @@
 #========================================#
 # Load packages (and install if they are not installed yet) ####
 #========================================#
-cran_packages=c("ggplot2","dplyr","RColorBrewer","tibble","ape","dichromat","seqinr","stringr","readr","phytools","devtools","lmerTest","pheatmap")
-bioconductor_packages=c("clusterProfiler")
+cran_packages=c("ggplot2","dplyr","RColorBrewer","tibble","ape","dichromat","seqinr","stringr","readr","phytools","devtools","lmerTest","pheatmap","MASS")
+bioconductor_packages=c("clusterProfiler","GenomicRanges","IRanges","Rsamtools","BSgenome","BSgenome.Hsapiens.UCSC.hg19","MutationalPatterns")
 
 for(package in cran_packages){
   if(!require(package, character.only=T,quietly = T, warn.conflicts = F)){
@@ -26,6 +26,9 @@ if(!require("hdp", character.only=T,quietly = T, warn.conflicts = F)){
   devtools::install_github("nicolaroberts/hdp", build_vignettes = F)
   library("hdp",character.only=T,quietly = T, warn.conflicts = F)
 }
+ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
+library(ref_genome,character.only=TRUE)
+options(stringsAsFactors = FALSE)
 
 #========================================#
 # Set the ggplot2 themes for plotting ####
@@ -55,7 +58,7 @@ mut_sigs_theme=theme(strip.text.x = element_text(size=6,margin = margin(0.6,0,0.
                      legend.title = element_text(size=7),
                      legend.key.size=unit(2.5,"mm"),
                      strip.background = element_rect(linewidth =0.25),
-                     panel.grid.major = element_line(size=0.25),
+                     panel.grid.major = element_line(linewidth=0.25),
                      panel.border = element_rect(linewidth=0.25))
 
 #========================================#
@@ -63,6 +66,7 @@ mut_sigs_theme=theme(strip.text.x = element_text(size=6,margin = margin(0.6,0,0.
 #========================================#
 
 root_dir<-"~/R_work/Clonal_dynamics_of_HSCT"
+genome_file=ifelse(Sys.info()['sysname']=="Darwin","~/R_work/reference_files/genome.fa","/nfs/cancer_ref02/human/GRCh37d5/genome.fa")
 source(paste0(root_dir,"/data/HSCT_functions.R"))
 plots_dir=paste0(root_dir,"/plots/")
 HDP_folder=paste0(root_dir,"/data/HDP")
@@ -79,27 +83,64 @@ DorR_cols<-RColorBrewer::brewer.pal(8,"Dark2")[1:2]; names(DorR_cols)<-c("D","R"
 
 #Read in other data objects
 sample_metadata<-readRDS(paste0(root_dir,"/data/metadata_files/sample_metadata_full.Rds"))
-trees_list<-readRDS(paste0(root_dir,"/data/trees_and_muts_files/tree_lists.Rds"))
-details_lists<-readRDS(paste0(root_dir,"/data/trees_and_muts_files/details_lists.Rds"))
+trees_list<-readRDS(paste0(root_dir,"/data/tree_and_mutation_files/tree_lists.Rds"))
+details_lists<-readRDS(paste0(root_dir,"/data/tree_and_mutation_files/details_lists.Rds"))
 
 #Extract objects from these lists in a 'for' loop
 for(x in names(trees_list)) {assign(x,trees_list[[x]])}
 for(x in names(details_lists)) {assign(x,details_lists[[x]])}
 
 #Generate information regarding loss-of-Y in male samples from X and Y coverage data
-LOY_files=list.files(path=paste0(root_dir,"/data/LOY_files"),pattern="meanCoverage",full.names = T)
+LOY_files=list.files(path=paste0(root_dir,"/data/SV_and_CNA_data/LOY_files"),pattern="meanCoverage",full.names = T)
 male_PDIDs<-c("PD45792","PD45793","PD45794","PD45795")
 Y_loss_df=dplyr::bind_rows(lapply(LOY_files,read.delim))%>%
   mutate(donor=substr(id,1,7))%>%
   mutate(loss_of_Y=ifelse(!donor%in%male_PDIDs,NA,ifelse(y/x<0.15,"YES","NO")))
 
 #Read in the spreadsheet listing other copy number changes
-CN_change_df=read.csv(paste0(root_dir,"/data/Copy_number_changes.csv"))
+CN_change_df=read.csv(paste0(root_dir,"/data/SV_and_CNA_data/Copy_number_changes.csv"))
 
 #Read in mutational signature extraction data
 exposures_df=generate_exposures_df(HDP_multi_chain_RDS_path=paste0(HDP_folder,"/HDP_multi_chain.Rdata"),
                                    trinuc_mut_mat_path=paste0(HDP_folder,"/trinuc_mut_mat.txt"),
                                    key_table_path = paste0(HDP_folder,"/key_table.txt"))%>%dplyr::rename("Pair"=exp_ID)
+
+
+#========================================#
+# WRITE VCFS OF APOBEC MUTATIONS####
+#========================================#
+#VCFs are used for testing for Extended Data Fig. 5c
+
+## Find branches with >10% of mutations assigned to APOBEC (N4) ----
+APOBEC_branches<-exposures_df%>%
+  filter(N4>0.1)
+
+## For each branch, get all branch mutations, annotate the trinucleotide context, and select only those from the specific APOBEC peaks ----
+temp=lapply(1:nrow(APOBEC_branches),function(i) {
+  pair<-APOBEC_branches$Pair[i]
+  APOBEC_node<-APOBEC_branches$node[i]
+  mutations<-all.muts[[pair]]%>%filter(node==APOBEC_node)%>%dplyr::select(Chrom,Pos,Ref,Alt)
+  
+  colnames(mutations) = c("chr","pos","ref","mut")
+  mutations$pos=as.numeric(mutations$pos)
+  mutations = mutations[(mutations$ref %in% c("A","C","G","T")) & (mutations$mut %in% c("A","C","G","T")) & mutations$chr %in% c(1:22,"X","Y"),]
+  mutations$trinuc_ref = as.vector(scanFa(genome_file, GRanges(mutations$chr, IRanges(as.numeric(mutations$pos)-1, 
+                                                                                      as.numeric(mutations$pos)+1))))
+  ntcomp = c(T="A",G="C",C="G",A="T")
+  mutations$sub = paste(mutations$ref,mutations$mut,sep=">")
+  mutations$trinuc_ref_py = mutations$trinuc_ref
+  for (j in 1:nrow(mutations)) {
+    if (mutations$ref[j] %in% c("A","G")) { # Purine base
+      mutations$sub[j] = paste(ntcomp[mutations$ref[j]],ntcomp[mutations$mut[j]],sep=">")
+      mutations$trinuc_ref_py[j] = paste(ntcomp[rev(strsplit(mutations$trinuc_ref[j],split="")[[1]])],collapse="")
+    }
+  }
+  
+  mutations_APOBEC_only<-mutations%>%filter(sub=="C>T"&(trinuc_ref_py=="TCA"|trinuc_ref_py=="TCT"))
+  mutations_APOBEC_only%>%dplyr::select(chr,pos,ref,mut)%>%dplyr::rename(Chrom=chr,Pos=pos,Ref=ref,Alt=mut)
+  
+  write.vcf(mutations_APOBEC_only%>%dplyr::select(chr,pos,ref,mut)%>%dplyr::rename(Chrom=chr,Pos=pos,Ref=ref,Alt=mut),vcf_path = paste0(root_dir,"/data/APOBEC_VCFs/APOBEC_",pair,"_",APOBEC_node,".vcf"),vcf_header_path = vcf_header_path)
+})
 
 #========================================#
 # LOOK AT TIMING OF BRANCHES WITH APOBEC ####

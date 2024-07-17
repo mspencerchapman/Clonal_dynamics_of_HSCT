@@ -52,22 +52,22 @@ DorR_cols<-RColorBrewer::brewer.pal(8,"Dark2")[1:2]; names(DorR_cols)<-c("D","R"
 
 #Read in other data objects
 sample_metadata<-readRDS(paste0(root_dir,"/data/metadata_files/sample_metadata_full.Rds"))
-trees_list<-readRDS(paste0(root_dir,"/data/trees_and_muts_files/tree_lists.Rds"))
-details_lists<-readRDS(paste0(root_dir,"/data/trees_and_muts_files/details_lists.Rds"))
+trees_list<-readRDS(paste0(root_dir,"/data/tree_and_mutation_files/tree_lists.Rds"))
+details_lists<-readRDS(paste0(root_dir,"/data/tree_and_mutation_files/details_lists.Rds"))
 
 #Extract objects from these lists in a 'for' loop
 for(x in names(trees_list)) {assign(x,trees_list[[x]])}
 for(x in names(details_lists)) {assign(x,details_lists[[x]])}
 
 #Generate information regarding loss-of-Y in male samples from X and Y coverage data
-LOY_files=list.files(path=paste0(root_dir,"/data/LOY_files"),pattern="meanCoverage",full.names = T)
+LOY_files=list.files(path=paste0(root_dir,"/data/SV_and_CNA_data/LOY_files"),pattern="meanCoverage",full.names = T)
 male_PDIDs<-c("PD45792","PD45793","PD45794","PD45795")
 Y_loss_df=dplyr::bind_rows(lapply(LOY_files,read.delim))%>%
   mutate(donor=substr(id,1,7))%>%
   mutate(loss_of_Y=ifelse(!donor%in%male_PDIDs,NA,ifelse(y/x<0.15,"YES","NO")))
 
 #Read in the spreadsheet listing other copy number changes
-CN_change_df=read.csv(paste0(root_dir,"/data/Copy_number_changes.csv"))
+CN_change_df=read.csv(paste0(root_dir,"/data/SV_and_CNA_data/Copy_number_changes.csv"))
 
 #Read in mutational signature extraction data
 exposures_df=generate_exposures_df(HDP_multi_chain_RDS_path=paste0(HDP_folder,"/HDP_multi_chain.Rdata"),

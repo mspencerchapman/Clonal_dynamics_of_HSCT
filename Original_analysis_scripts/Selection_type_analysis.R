@@ -44,8 +44,8 @@ DorR_cols<-RColorBrewer::brewer.pal(8,"Dark2")[1:2]
 names(DorR_cols)<-c("D","R")
 
 #Read in other data objects
-trees_list<-readRDS(paste0(root_dir,"/data/trees_and_muts_files/tree_lists.Rds"))
-details_lists<-readRDS(paste0(root_dir,"/data/trees_and_muts_files/details_lists.Rds"))
+trees_list<-readRDS(paste0(root_dir,"/data/tree_and_mutation_files/tree_lists.Rds"))
+details_lists<-readRDS(paste0(root_dir,"/data/tree_and_mutation_files/details_lists.Rds"))
 
 #Extract objects from these lists in a 'for' loop
 for(x in names(trees_list)) {assign(x,trees_list[[x]])}
@@ -57,8 +57,8 @@ annotated_drivers_df<-read_csv(paste0(root_dir,"/data/Possible_drivers_annotated
 
 consistency_fixed=T
 if(consistency_fixed) {
-  trees_list<-readRDS(paste0(root_dir,"/data/trees_and_muts_files/tree_lists.Rds"))
-  details_list<-readRDS(paste0(root_dir,"/data/trees_and_muts_files/details_lists.Rds"))
+  trees_list<-readRDS(paste0(root_dir,"/data/tree_and_mutation_files/tree_lists.Rds"))
+  details_list<-readRDS(paste0(root_dir,"/data/tree_and_mutation_files/details_lists.Rds"))
   
   #Extract objects from these lists in a 'for' loop
   for(x in names(trees_list)) {assign(x,trees_list[[x]])}

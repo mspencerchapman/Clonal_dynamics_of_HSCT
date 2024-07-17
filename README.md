@@ -2,21 +2,23 @@
 Code accompanying the manuscript 'Clonal dynamics after allogeneic haematopoietic cell transplantation using genome-wide somatic mutations'
 
 # General notes
-The code is provided for all analyses from mutation calls from Caveman and Pindel on the original bam files (run unmatched) up to the generation of figures used in the manuscript.
-However, (most) intermediate data is available such that each stage of the analysis can be performed without having to re-run the earlier steps.
-Smaller data objects are provided within the github repository. Larger data objects need to be downloaded from Mendeley Data at doi: 10.17632/m7nz2jk8wb.2
+The code is provided for all analyses from mutation calls from Caveman and Pindel on the original bam files (run unmatched) up to the generation of figures used in the manuscript. The numbered folders go through the different steps in the analysis, roughly in the order in which they were performed. However, (most) intermediate data is available such that each stage of the analysis can be readily performed without having to re-run earlier stages. \
+Smaller data objects are provided within the github repository. Larger data objects need to be downloaded from Mendeley Data at doi: 10.17632/m7nz2jk8wb.2 \
+Raw whole-genome sequencing data is available via the EGA (https://ega-archive.org/), accession number: EGAD00001010872 \
+Raw targeted sequencing data is available via the EGA (https://ega-archive.org/), accession number: EGAD00001010874
+If there are any queries, feel free to contact me via email: ms56@sanger.ac.uk
 
 ## Objects that need to be downloaded from Mendeley Data
 data/Targeted_sequencing_data \
 data/annot_files \
 data/annot_files_no_dups \
 data/HDP/HDP_multi_chain.Rds \
-data/genomic_loci_reference_files \
+data/genomic_loci_reference_files
 
 # Notes on specific stages of data generation
 
 ## 01 Generating the phylogenies and mutation lists
-This is potentially the most challenging to reproduce exactly. You will first need to download the original bam files from European Genome/Phenome Archive (EGA), accession number:
+This is potentially the most challenging to reproduce exactly. You will first need to download the original bam files from European Genome/Phenome Archive (EGA), accession number: EGAD00001010872.
 You will then need to rerun Caveman & Pindel against an unmatched synthetic reference genome to produce mutation calls from each clone.
 You will then need to run the hairpin filtering program that we have developed to remove artefacts from our low-input pipeline data.
 You will next need to run cgpVaf, a programme to extract read counts across a large set of bams at genomic positions specified in a bed file.
@@ -30,7 +32,7 @@ The scripts provided here allow this to be re-run locally, or better, on a compu
 This is a single script that takes the data from the previous two stages, as well as a comprehensive list of sample metadata to generate the final set of data objects for all downstream analyses.
 
 ## 04 Gibbs_sampler_for_targ_seq
-These scripts are written in julia.
+These scripts are written in julia. They need to be run on data using the three separate baitsets individually. This is because for each baitset, the samples coming from different individuals to the one in which the mutation was called are used to estimate the locus-specific sequencing error rates.
 
 ## 05 ABC_simulation_scripts
 These scripts must be run on a compute farm, and use nextflow for job submission.
@@ -48,7 +50,7 @@ These are the original scripts used to analyse the data. They are not quite as '
 ## Other simulation scripts
 Simulation scripts used for analyses other than the main 'engrafting cell number' ABC.
 This includes:
-1. estimating the phylogenetic age
+1. estimating the phylogenetic age \
 2. estimating the effect that increased T-cell clone longevity may have on clonal composition relative to the myeloid fraction
 
 ## data
@@ -58,6 +60,6 @@ data/tree_and_mutation_files/ - includes all saved objects relating to tree stru
 data/SV_and_CNA_data/ - includes summaries of structural variants and copy number alterrations from GRIDSS and ASCAT. Loss-of-Y information is derived from the mean coverage data. \
 data/HDP/ - data files relating mutational signature extraction with HDP \
 data/APOBEC_VCFs - vcf files containing only the likely APOBEC mutations from branches affected by APOBEC/ \
-data/targeted_sequencing_data - raw and inferred data related to the targeted sequencing \
+data/targeted_sequencing_data - raw and inferred data related to the targeted sequencing. The 'data_by_baitset' folder includes \
 data/ABC_simulation_results - the posterior results from the models with different ABCs
 

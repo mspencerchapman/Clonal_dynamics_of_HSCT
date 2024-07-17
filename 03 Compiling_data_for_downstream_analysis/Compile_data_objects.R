@@ -76,7 +76,7 @@ DorR_cols<-RColorBrewer::brewer.pal(8,"Dark2")[1:2]; names(DorR_cols)<-c("D","R"
 sample_metadata<-read.delim(paste0(root_dir,"/data/sample_level_metadata.tsv"))
 
 #Generate information regarding loss-of-Y in male samples from X and Y coverage data ----
-LOY_files=list.files(path=paste0(root_dir,"/data/LOY_files"),pattern="meanCoverage",full.names = T)
+LOY_files=list.files(path=paste0(root_dir,"/data/SV_and_CNA_data/LOY_files"),pattern="meanCoverage",full.names = T)
 male_PDIDs<-c("PD45792","PD45793","PD45794","PD45795")
 Y_loss_df=dplyr::bind_rows(lapply(LOY_files,read.delim))%>%
   mutate(donor=substr(id,1,7))%>%
@@ -509,6 +509,6 @@ details_lists<-lapply(details_objects,get)
 names(details_lists)<-details_objects
 
 #Save files
-saveRDS(tree_lists,file=paste0(root_dir,"/data/trees_and_muts_files/tree_lists.Rds"))
-saveRDS(details_lists,file=paste0(root_dir,"/data/trees_and_muts_files/details_lists.Rds"))
+saveRDS(tree_lists,file=paste0(root_dir,"/data/tree_and_mutation_files/tree_lists.Rds"))
+saveRDS(details_lists,file=paste0(root_dir,"/data/tree_and_mutation_files/details_lists.Rds"))
 saveRDS(sample_metadata,file=paste0(root_dir,"/data/metadata_files/sample_metadata_full.Rds"))

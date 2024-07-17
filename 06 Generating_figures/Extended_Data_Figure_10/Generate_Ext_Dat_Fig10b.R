@@ -69,7 +69,7 @@ all.muts.nodups<-lapply(all_pairs,function(PairID){cat(PairID);load(grep(PairID,
 names(all.muts.nodups)<-all_pairs
 
 ## Generate information regarding loss-of-Y in male samples from X and Y coverage data ----
-LOY_files=list.files(path=paste0(root_dir,"/data/LOY_files"),pattern="meanCoverage",full.names = T)
+LOY_files=list.files(path=paste0(root_dir,"/data/SV_and_CNA_data/LOY_files"),pattern="meanCoverage",full.names = T)
 male_PDIDs<-c("PD45792","PD45793","PD45794","PD45795")
 Y_loss_df=dplyr::bind_rows(lapply(LOY_files,read.delim))%>%
   mutate(donor=substr(id,1,7))%>%
@@ -85,7 +85,7 @@ Pair11_loss_of_Y_details=data.frame(Chrom="Y",Pos=NA,Ref=NA,Alt=NA,mut_ref=paste
 
 
 ## Read in the spreadsheet listing other copy number changes ----
-CN_change_df=read.csv(paste0(root_dir,"/data/Copy_number_changes.csv"))
+CN_change_df=read.csv(paste0(root_dir,"/data/SV_and_CNA_data/Copy_number_changes.csv"))
 
 ## Read in mutational signature extraction data----
 exposures_df=generate_exposures_df(HDP_multi_chain_RDS_path=paste0(HDP_folder,"/HDP_multi_chain.Rdata"),
