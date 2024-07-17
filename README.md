@@ -4,16 +4,13 @@ Code accompanying the manuscript 'Clonal dynamics after allogeneic haematopoieti
 # General notes
 The code is provided for all analyses from mutation calls from Caveman and Pindel on the original bam files (run unmatched) up to the generation of figures used in the manuscript.
 However, (most) intermediate data is available such that each stage of the analysis can be performed without having to re-run the earlier steps.
-Smaller data objects are provided within the github repository, some of which require github lfs.
-Larger data objects need to be downloaded from Mendeley Data at doi: 10.17632/m7nz2jk8wb.2
-
-# Objects requiring lfs
-HDP_multi_chain.Rds
+Smaller data objects are provided within the github repository. Larger data objects need to be downloaded from Mendeley Data at doi: 10.17632/m7nz2jk8wb.2
 
 # Objects that need to be downloaded from Mendeley Data
 data/Targeted_sequencing_data
 data/annot_files
 data/annot_files_no_dups
+data/HDP/HDP_multi_chain.Rds
 data/genomic_loci_reference_files
 
 # Notes on specific stages of data generation

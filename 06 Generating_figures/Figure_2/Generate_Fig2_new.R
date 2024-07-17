@@ -62,7 +62,7 @@ DorR_cols<-RColorBrewer::brewer.pal(8,"Dark2")[1:2]; names(DorR_cols)<-c("D","R"
 
 #Read in the trees list for the ABC
 #These are the versions of the trees used for the ABC - see the 'Compile_data_objects.R' script for how these are produced
-ABC.trees<-readRDS(paste0(root_dir,"/data/trees_for_ABC.Rds"))
+ABC.trees<-readRDS(paste0(root_dir,"/data/tree_and_mutation_files/trees_for_ABC.Rds"))
 
 #========================================#
 # SPECIFIC FUNCTIONS FOR THIS SCRIPT ####
@@ -187,158 +187,14 @@ get_subsampled_tree2=function (tree, N, tips = tree$edge[c(which(tree$state == 0
 # GET SUMMARY STATISTICS FROM THE DATA ####
 #========================================#
 
-##EXTRACT SUMMARY STATISTICS
-#(1) 3 LARGEST CLADES
-all.ss<-Map(tree=ABC.trees,pair=names(ABC.trees),function(tree,pair) {
-  cat(pair,sep="\n")
-  donor_id<-get_DR_ids(tree)['donor_ID']
-  recip_id<-get_DR_ids(tree)['recip_ID']
-  
-  age_of_donor_at_HSCT<-Pair_metadata$Age_at_transplant[Pair_metadata$Pair==pair]
-  age_of_donor_at_sampling<-Pair_metadata$Age[Pair_metadata$Pair==pair]
-  
-  D_tree<-keep.tip(tree,tip=grep(donor_id,tree$tip.label))
-  R_tree<-keep.tip(tree,tip=grep(recip_id,tree$tip.label))
-  
-  largest_clades_D<-get_expanded_clade_nodes(D_tree,height_cut_off = 50,min_clonal_fraction = 0.001,min_samples=1)%>%
-    pull(n_samples)%>%sort(decreasing = T)%>%.[1:3]
-  largest_clades_R<-get_expanded_clade_nodes(R_tree,height_cut_off = 50,min_clonal_fraction = 0.001,min_samples=1)%>%
-    pull(n_samples)%>%sort(decreasing = T)%>%.[1:3]
-  
-  #(2) Number of singletons
-  n_singletons_D<-get_expanded_clade_nodes(D_tree,height_cut_off = 50,min_clonal_fraction = 0.001,min_samples=1)%>%
-    dplyr::filter(n_samples==1)%>%nrow(.)
-  n_singletons_R<-get_expanded_clade_nodes(R_tree,height_cut_off = 50,min_clonal_fraction = 0.001,min_samples=1)%>%
-    dplyr::filter(n_samples==1)%>%nrow(.)
-  
-  #(3) Peri-HSCT LTT/ coalescences
-  tree.time<-tree
-  tree.time$edge.length<-tree$edge.length*(age_of_donor_at_sampling/median(get_mut_burden(tree)))
-  D_tree.time<-keep.tip(tree.time,tip=grep(donor_id,tree$tip.label))
-  R_tree.time<-keep.tip(tree.time,tip=grep(recip_id,tree$tip.label))
-  
-  peri_HSCT_time_points=unlist(lapply(age_of_donor_at_HSCT,function(x) c(x-5,x+5)))
-  DR_ltt_peri<-get_ltt(tree=tree.time,time_points=peri_HSCT_time_points)
-  D_ltt_peri<-get_ltt(tree=D_tree.time,time_points=peri_HSCT_time_points)
-  R_ltt_peri<-get_ltt(tree=R_tree.time,time_points=peri_HSCT_time_points)
-  DR_coals_peri<-get_coalescences(DR_ltt_peri)
-  D_coals_peri<-get_coalescences(D_ltt_peri)
-  R_coals_peri<-get_coalescences(R_ltt_peri)
-  
-  #(4) Pre-HSCT LTT/ coalescences
-  pre_HSCT_time_points=c(5,peri_HSCT_time_points[1])
-  DR_ltt_pre<-get_ltt(tree=tree.time,time_points=pre_HSCT_time_points)
-  D_ltt_pre<-get_ltt(tree=D_tree.time,time_points=pre_HSCT_time_points)
-  R_ltt_pre<-get_ltt(tree=R_tree.time,time_points=pre_HSCT_time_points)
-  DR_coals_pre<-get_coalescences(DR_ltt_pre)
-  D_coals_pre<-get_coalescences(D_ltt_pre)
-  R_coals_pre<-get_coalescences(R_ltt_pre)
-  
-  #(5) Maximum peri-transplant coalescences within single recipient clade (this is a new stat)
-  R_max_coals_in_single_clade=max(coals_within_time_window_per_clone(tree=R_tree.time,define_clone_height = 5,time_points = peri_HSCT_time_points))
-  
-  visualize=F
-  if(visualize){
-    par(mfrow=c(2,1))
-    zz=plot_tree(D_tree.time,cex.label=0)#,default_edge_color = "#11a0aa80")
-    rect(xleft = 0,xright = length(D_tree.time$tip.label),ybottom = (age_of_donor_at_sampling-age_of_donor_at_HSCT-5),ytop = (age_of_donor_at_sampling-age_of_donor_at_HSCT+5),col="#D3D3D380",border = "black")
-    yy=plot_tree(R_tree.time,cex.label=0)#,default_edge_color = "#c8256580")
-    rect(xleft = 0,xright = length(R_tree.time$tip.label),ybottom = (age_of_donor_at_sampling-age_of_donor_at_HSCT-5),ytop = (age_of_donor_at_sampling-age_of_donor_at_HSCT+5),col="#D3D3D380",border = "black")
-  }
-  
-  #(6) Bulk stats
-  mean_abs_log2FC=NA
-  median_abs_log2FC=NA
-  max_abs_log2FC=NA
-  mean_abs_change=NA
-  median_abs_change=NA
-  max_abs_change=NA
-  
-  ##--COMBINE SUMSTATS INTO SINGLE VECTOR--
-  ss_names=c(paste("largest_clade_D",1:3,sep="_"),
-             paste("largest_clade_R",1:3,sep="_"),
-             "n_singletons_D",
-             "n_singletons_R",
-             paste(c("DR","D","R"),"coals_pre",sep="_"),
-             paste(c("DR","D","R"),"coals_peri",sep="_"),
-             "R_max_coals_in_single_clade",
-             "mean_abs_log2FC",
-             "median_abs_log2FC",
-             "max_abs_log2FC",
-             "mean_abs_change",
-             "median_abs_change",
-             "max_abs_change")
-  
-  ss_comb=c(largest_clades_D,
-            largest_clades_R,
-            n_singletons_D,
-            n_singletons_R,
-            DR_coals_pre,
-            D_coals_pre,
-            R_coals_pre,
-            DR_coals_peri,
-            D_coals_peri,
-            R_coals_peri,
-            R_max_coals_in_single_clade,
-            mean_abs_log2FC,
-            median_abs_log2FC,
-            max_abs_log2FC,
-            mean_abs_change,
-            median_abs_change,
-            max_abs_change)
-  names(ss_comb)<-ss_names
-  return(ss_comb)
-})
+#Please see the folder '05 ABC_simulation_script' for details on how this data is generated
+param_posteriors<-lapply(Pair_metadata$Pair,function(pair) {
+  df<-read.delim(paste0(root_dir,"/data/ABC_simulation_results/Engrafting_cell_number_ABC_m2/output_",pair,"/posterior_sample.txt"))%>%
+    mutate(PairID=pair,.before=1)
+  return(df)
+})%>%dplyr::bind_rows()%>%
+  tidyr::gather(-PairID,key="parameter",value="value")
 
-#========================================#
-# IMPORT PARAMETERS AND SUMMARY STATISTICS FOR THE SIMULATIONS & PERFORM ABC ####
-#========================================#
-
-setwd(paste0(root_dir,"/data/ABC_simulation_results/Engrafting_cell_number_ABC_simulation_results"))
-
-#Can run with different sets of summary stats - define different sets
-all_tree_sumstats=1:15
-tree_sumstats_no_Rpre_coals=c(1,2,3,4,6,8,9,10,11,12,13,14)
-
-param_posteriors<-lapply(names(ABC.trees),function(pair){
-  cat(pair,sep="\n")
-  
-  sim.files=list.files(path=pair,pattern=".Rds",full.names = T)
-  params_file=paste0("all_params_",pair,".Rds")
-  sumstats_file=paste0("all_sumstats_",pair,".Rds")
-  
-  if(file.exists(params_file) & file.exists(sumstats_file)){
-    cat("Importing pre-existing parameters and summary statistic files",sep="\n")
-    params<-readRDS(params_file)
-    sumstats<-readRDS(sumstats_file)
-  } else {
-    sim.output<-lapply(sim.files,function(file) {if(which(sim.files==file)%%100 == 0) {print(which(sim.files==file))};readRDS(file)})
-    
-    params<-lapply(sim.output,function(res) unlist(res$params))%>%dplyr::bind_rows()
-    sumstats<-lapply(sim.output,function(res) unlist(res$sumstats))%>%dplyr::bind_rows()
-    
-    saveRDS(params,file=params_file)
-    saveRDS(sumstats,file=sumstats_file)
-  }
-  
-  #Can run with different sets of summary stats
-  all_tree_sumstats=1:15 #All the phylo statistics (not including targeted sequencing results)
-  tree_sumstats_no_Rpre_coals=c(1:4,6,8,10,11,13,14) #This one does not include the combined phylo as well as the separate phylo for the coalescneces sumstats
-  #tree_sumstats_no_Rpre_coals=c(1:4,6,8:14) #This one includes the combined phylo as well as the separate phylo for the coalescneces sumstats
-  
-  #For assessing engrafting HSC number ignore the R pre-HSCT coalescences (which distorts the posterior as ABC is unable to fit this)
-  which_sumstats<-tree_sumstats_no_Rpre_coals
-  
-  #Run the ABC - log transform the parameters for the regression step. Use tolerance of 5% (= ~ top 1000 for 20,000 simulations)
-  abc.res<-abc(target = all.ss[[pair]][which_sumstats],param = params[,6:7],sumstat=sumstats[,which_sumstats],tol = 0.05,transf = c("log","log"),method="neuralnet")
-  
-  closest_fit<-which.min(abc.res$dist)
-  as.matrix(sumstats[closest_fit,])
-  
-  data.ss.df<-data.frame(sumstat=names(all.ss[[pair]][which_sumstats]),value=all.ss[[pair]][which_sumstats])
- 
-  return(as.data.frame(abc.res$adj.values)%>%gather(key="parameter",value="value")%>%mutate(PairID=pair,.before=1))
-})%>%bind_rows()
 
 #========================================#
 # VISUALIZE RESULTS - INCLUDING CORRELATION WITH OTHER HSCT PARAMETERS ####
@@ -371,6 +227,7 @@ ECN_by_CD34<-HSCT_correlates%>%
   geom_errorbar(width=0.3,linewidth=0.3)+
   scale_color_manual(values=Pair_cols,drop=T,limits=HSCT_correlates%>%filter(!is.na(CD34_dose))%>%pull(PairID))+
   scale_y_log10(labels=scales::label_comma())+
+  guides(col=guide_legend(order=2),shape=guide_legend(order=1))+
   labs(x="CD34 dose (million/ kg)",y="Est. number engrafting HSCs",col="Pair",shape="HSC source")+
   theme_classic()+
   my_theme+
@@ -382,23 +239,24 @@ ECN_by_age_at_HSCT<-HSCT_correlates%>%
   geom_errorbar(width=2,linewidth=0.3)+
   scale_color_manual(values=Pair_cols)+
   scale_y_log10(labels=scales::label_comma())+
-  labs(x="Age at HSCT (years)",y="Est. number engrafting HSCs",col="Pair",shape="HSC source")+
+  guides(col=guide_legend(order=2),shape=guide_legend(order=1))+
+  labs(x="Age at HCT (years)",y="Est. number engrafting HSCs",col="Pair",shape="HSC source")+
   theme_classic()+
   my_theme+
   theme(legend.key.height = unit(3,"mm"))
 
 #Prepare a dataframe with the full posterior distribution for the engrafting cell number, and the metadata to do the regression steps
 HSCT_regression_df<-param_posteriors%>%
-  mutate(PairID=factor(new_pair_names[PairID],levels=Pair_metadata$Pair_new[order(Pair_metadata$Age)]))%>%
-  filter(parameter=="HCT_bottleneck")%>%
+  mutate(PairID=factor(new_pair_names[PairID],levels=paste0("Pair_",1:10)))%>%
+  filter(parameter=="HSCT_bottleneck")%>%
   left_join(Pair_metadata,by=c("PairID"="Pair_new"))
 
 #Do the linear mixed effects regressions and plot summaries
-lme.age<-lme4::lmer(log(value)~Age+(1|PairID),data=HSCT_regression_df)
-lme.age_at_HSCT<-lme4::lmer(log(value)~Age_at_transplant+(1|PairID),data=HSCT_regression_df)
-lme.CD34<-lme4::lmer(log(value)~CD34_dose+(1|PairID),data=HSCT_regression_df)
-lme.HSC_source<-lme4::lmer(log(value)~stem_cell_source+(1|PairID),data=HSCT_regression_df)
-lme.conditioning<-lme4::lmer(log(value)~conditioning+(1|PairID),data=HSCT_regression_df)
+lme.age<-lmerTest::lmer(log(value)~Age+(1|PairID),data=HSCT_regression_df)
+lme.age_at_HSCT<-lmerTest::lmer(log(value)~Age_at_transplant+(1|PairID),data=HSCT_regression_df)
+lme.CD34<-lmerTest::lmer(log(value)~CD34_dose+(1|PairID),data=HSCT_regression_df)
+lme.HSC_source<-lmerTest::lmer(log(value)~stem_cell_source+(1|PairID),data=HSCT_regression_df)
+lme.conditioning<-lmerTest::lmer(log(value)~conditioning+(1|PairID),data=HSCT_regression_df)
 
 summary(lme.age);confint(lme.age)
 summary(lme.age_at_HSCT);confint(lme.age_at_HSCT)
