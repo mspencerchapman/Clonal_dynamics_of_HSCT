@@ -5,3 +5,4 @@ data/tree_and_mutation_files/annot_files_no_dups/
 data/tree_and_mutation_files/details_lists.Rds
 data/tree_and_mutation_files/annot_files
 data/targeted_sequencing_data/raw_model_output
+data/targeted_sequencing_data/data_by_baitset

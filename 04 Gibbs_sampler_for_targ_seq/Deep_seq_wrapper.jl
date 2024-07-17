@@ -6,7 +6,7 @@ using Distributions
 using Random
 
 Random.seed!(28)
-base_dir = "/Users/pc8/Documents/Parallel_sequencing/Normal_tissue/Blood/Stem_cell_transplantation/Scripts/"
+base_dir = "/Users/pc8/Documents/Parallel_sequencing/Normal_tissue/Blood/Stem_cell_transplantation/Scripts/" #UPDATE TO LOCAL DIRECTORY
 include("$base_dir/src/Deep_seq_tree_GS.jl")
 
 ####################################################
@@ -14,8 +14,9 @@ include("$base_dir/src/Deep_seq_tree_GS.jl")
 # First, call R and read RDS files in; break into components
 R"""
     library(ape)
-    mut_matrices <- readRDS("data/baitset2_cgpvaf_matrices.RDS")
-    tree_info <- readRDS("data/baitset2_muts_and_tree_UPDATED.RDS")
+    baitset=2
+    mut_matrices <- readRDS(paste0("data/targeted_sequencing_data/data_by_baitset/baitset",baitset,"/baitset",baitset,"_cgpvaf_matrices.RDS"))
+    tree_info <- readRDS(paste0("data/targeted_sequencing_data/data_by_baitset/baitset",baitset,"/baitset",baitset,"_trees_and_muts.RDS"))
     tree38 <- tree_info[["Pair38"]][["tree"]]
     tree40 <- tree_info[["Pair40"]][["tree"]]
     tree41 <- tree_info[["Pair41"]][["tree"]]

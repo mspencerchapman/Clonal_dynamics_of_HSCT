@@ -6,12 +6,12 @@ The code is provided for all analyses from mutation calls from Caveman and Pinde
 However, (most) intermediate data is available such that each stage of the analysis can be performed without having to re-run the earlier steps.
 Smaller data objects are provided within the github repository. Larger data objects need to be downloaded from Mendeley Data at doi: 10.17632/m7nz2jk8wb.2
 
-# Objects that need to be downloaded from Mendeley Data
-data/Targeted_sequencing_data
-data/annot_files
-data/annot_files_no_dups
-data/HDP/HDP_multi_chain.Rds
-data/genomic_loci_reference_files
+## Objects that need to be downloaded from Mendeley Data
+data/Targeted_sequencing_data \
+data/annot_files \
+data/annot_files_no_dups \
+data/HDP/HDP_multi_chain.Rds \
+data/genomic_loci_reference_files \
 
 # Notes on specific stages of data generation
 
@@ -52,12 +52,12 @@ This includes:
 2. estimating the effect that increased T-cell clone longevity may have on clonal composition relative to the myeloid fraction
 
 ## data
-data/reference_files/ - includes reference files used in various analyses
-data/metadata_files/ - includes individual-level metadata, and sample-level metadata
-data/tree_and_mutation_files/
-data/SV_and_CNA_data/ - includes summaries of structural variants and copy number alterrations from GRIDSS and ASCAT. Loss-of-Y information is derived from the mean coverage data.
-data/HDP/ - data files relating mutational signature extraction with HDP
-data/APOBEC_VCFs - vcf files containing only the likely APOBEC mutations from branches affected by APOBEC/
-data/targeted_sequencing_data - raw and inferred data related to the targeted sequencing
+data/reference_files/ - includes reference files used in various analyses \
+data/metadata_files/ - includes individual-level metadata, and sample-level metadata \
+data/tree_and_mutation_files/ - includes all saved objects relating to tree structures or mutation information from the WGS \
+data/SV_and_CNA_data/ - includes summaries of structural variants and copy number alterrations from GRIDSS and ASCAT. Loss-of-Y information is derived from the mean coverage data. \
+data/HDP/ - data files relating mutational signature extraction with HDP \
+data/APOBEC_VCFs - vcf files containing only the likely APOBEC mutations from branches affected by APOBEC/ \
+data/targeted_sequencing_data - raw and inferred data related to the targeted sequencing \
 data/ABC_simulation_results - the posterior results from the models with different ABCs
 

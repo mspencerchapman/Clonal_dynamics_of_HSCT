@@ -189,7 +189,7 @@ get_subsampled_tree2=function (tree, N, tips = tree$edge[c(which(tree$state == 0
 
 #Please see the folder '05 ABC_simulation_script' for details on how this data is generated
 param_posteriors<-lapply(Pair_metadata$Pair,function(pair) {
-  df<-read.delim(paste0(root_dir,"/data/ABC_simulation_results/Engrafting_cell_number_ABC_m2/output_",pair,"/posterior_sample.txt"))%>%
+  df<-read.delim(paste0(root_dir,"/data/ABC_simulation_results/Engrafting_cell_number_ABC_m1/output_",pair,"/posterior_sample.txt"))%>%
     mutate(PairID=pair,.before=1)
   return(df)
 })%>%dplyr::bind_rows()%>%
