@@ -1,7 +1,7 @@
 #Read in the posteriors from E. Mitchell et al, 2022 to use as the parameter distribution
-param_posterior<-read.delim(ifelse(Sys.info()["sysname"] == "Darwin",paste0(my_working_directory,"/data/reference_files/HSC_population_posterior_sample.txt"),"/lustre/scratch119/casm/team154pc/ms56/Zur_HSCT/ABC_models/ABC_Apr2022/posterior_sample.txt"))
+param_posterior<-read.delim(ifelse(Sys.info()["sysname"] == "Darwin",paste0(root_dir,"/data/reference_files/driver_parameter_posterior_sample.txt"),"/lustre/scratch119/casm/team154pc/ms56/Zur_HSCT/ABC_models/ABC_Apr2022/posterior_sample.txt"))
 these_params=colnames(param_posterior)
-HSC_pop_posteriors<-read.delim(ifelse(Sys.info()["sysname"] == "Darwin",paste0(my_working_directory,"/data/reference_files/driver_parameter_posterior_sample.txt"),"/lustre/scratch119/casm/team154pc/ms56/Zur_HSCT/ABC_models/ABC_Apr2022/KX001_KX002_combined_Nt_posterior.txt"),header = F)%>%
+HSC_pop_posteriors<-read.delim(ifelse(Sys.info()["sysname"] == "Darwin",paste0(root_dir,"/data/reference_files/HSC_population_posterior_sample.txt"),"/lustre/scratch119/casm/team154pc/ms56/Zur_HSCT/ABC_models/ABC_Apr2022/KX001_KX002_combined_Nt_posterior.txt"),header = T)%>%
   dplyr::mutate("Parameter"="HSC_population_size",.before=1)%>%
   dplyr::rename("Value"=2)
 
@@ -11,8 +11,8 @@ names(labels)<-old_params
 
 #Plot of input parameter distributions into the model
 input_params_plot<-param_posterior%>%
-  pivot_longer(cols=all_of(these_params),names_to="Parameter",values_to = "Value")%>%
-  bind_rows(HSC_pop_posteriors)%>%
+  tidyr::pivot_longer(cols=all_of(these_params),names_to="Parameter",values_to = "Value")%>%
+  dplyr::bind_rows(HSC_pop_posteriors)%>%
   mutate(Parameter=labels[Parameter])%>%
   ggplot(aes(x=Value))+
   geom_density(fill="lightblue")+
