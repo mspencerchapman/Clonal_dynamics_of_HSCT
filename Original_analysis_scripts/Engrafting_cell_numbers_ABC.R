@@ -60,7 +60,7 @@ DorR_cols<-RColorBrewer::brewer.pal(8,"Dark2")[1:2]; names(DorR_cols)<-c("D","R"
 
 #Read in the trees list for the ABC
 #These are the versions of the trees used for the ABC - see the 'Compile_data_objects.R' script for how these are produced
-ABC.trees<-readRDS(paste0(root_dir,"/data/trees_for_ABC.Rds"))
+ABC.trees<-readRDS(paste0(root_dir,"/data/tree_and_mutation_files/trees_for_ABC.Rds"))
 
 #========================================#
 # SPECIFIC FUNCTIONS FOR THIS SCRIPT ####
