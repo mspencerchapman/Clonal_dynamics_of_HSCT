@@ -368,6 +368,11 @@ get_DR_expanded_clades=function(tree,DorR,height_cut_off=50,min_samples,min_clon
 
 #Function to import the HDP data and convert into an exposures data frame
 generate_exposures_df=function(HDP_multi_chain_RDS_path,trinuc_mut_mat_path,key_table_path){
+  require(hdp)
+  require(dplyr)
+  require(tibble)
+  require(tidyr)
+  
   mut_example_multi=readRDS(HDP_multi_chain_RDS_path)
   mutations=read.table(trinuc_mut_mat_path)
   key_table=read.table(key_table_path)

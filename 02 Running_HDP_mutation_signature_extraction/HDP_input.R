@@ -70,13 +70,8 @@ mutlist_to_96_contexts=function(mutlist,genomeFile=lustre_ref){
 
 root_dir<-"~/R_work/Clonal_dynamics_of_HSCT"
 source(paste0(root_dir,"/data/HSCT_functions.R"))
-plots_dir=paste0(root_dir,"/plots/")
 HDP_folder=paste0(root_dir,"/data/HDP")
-tree_folder=paste0(root_dir,"/data/tree_files/")
 annotated_muts_folder=paste0(root_dir,"/data/annot_files/")
-
-## Read in other data objects ----
-sample_metadata<-readRDS(paste0(root_dir,"/data/metadata_files/sample_metadata_full.Rds"))
 
 #Import the annotated muts files
 annotated_muts_paths=list.files(annotated_muts_folder,pattern="annotated_mut_set",full.names = T)

@@ -7,7 +7,7 @@
 #========================================#
 # Load packages (and install if they are not installed yet) ####
 #========================================#
-cran_packages=c("devtools")
+cran_packages=c("remotes")
 
 for(package in cran_packages){
   if(!require(package, character.only=T,quietly = T, warn.conflicts = F)){
@@ -16,7 +16,7 @@ for(package in cran_packages){
   }
 }
 if(!require("hdp", character.only=T,quietly = T, warn.conflicts = F)){
-  devtools::install_github("nicolaroberts/hdp", build_vignettes = F)
+  devtools::install_github("NickWilliamsSanger/hdp", build_vignettes = F)
   library("hdp",character.only=T,quietly = T, warn.conflicts = F)
 }
 

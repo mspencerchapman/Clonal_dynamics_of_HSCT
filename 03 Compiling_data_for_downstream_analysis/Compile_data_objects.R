@@ -30,7 +30,7 @@ if(!require("treemut", character.only=T,quietly = T, warn.conflicts = F)){
   library("treemut",character.only=T,quietly = T, warn.conflicts = F)
 }
 if(!require("hdp", character.only=T,quietly = T, warn.conflicts = F)){
-  devtools::install_github("nicolaroberts/hdp", build_vignettes = F)
+  devtools::install_github("NickWilliamsSanger/hdp", build_vignettes = F)
   library("hdp",character.only=T,quietly = T, warn.conflicts = F)
 }
 
@@ -83,7 +83,7 @@ Y_loss_df=dplyr::bind_rows(lapply(LOY_files,read.delim))%>%
   mutate(loss_of_Y=ifelse(!donor%in%male_PDIDs,NA,ifelse(y/x<0.15,"YES","NO")))
 
 #Read in the spreadsheet listing other copy number changes
-CN_change_df=read.csv("~/R_work/Zurich_HSCT/Data/Copy_number_changes.csv")
+CN_change_df=read.csv(paste0(root_dir,"/data/SV_and_CNA_data/Copy_number_changes.csv"))
 
 #Read in mutational signature extraction data
 exposures_df=generate_exposures_df(HDP_multi_chain_RDS_path=paste0(HDP_folder,"/HDP_multi_chain.Rdata"),
