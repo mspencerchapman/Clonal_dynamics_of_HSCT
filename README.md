@@ -3,12 +3,14 @@ Code accompanying the manuscript 'Clonal dynamics after allogeneic haematopoieti
 
 # General notes
 The code is provided for all analyses from mutation calls from Caveman and Pindel on the original bam files (run unmatched) up to the generation of figures used in the manuscript. The numbered folders go through the different steps in the analysis, roughly in the order in which they were performed. However, (most) intermediate data is available such that each stage of the analysis can be readily performed without having to re-run earlier stages. \
-Smaller data objects are provided within the github repository. Larger data objects need to be downloaded from Mendeley Data at doi: 10.17632/m7nz2jk8wb.2 \
+Smaller data objects are provided within the github repository. Larger data objects need to be downloaded from Mendeley Data at https://data.mendeley.com/datasets/m7nz2jk8wb/2 \
 Raw whole-genome sequencing data is available via the EGA (https://ega-archive.org/), accession number: EGAD00001010872 \
 Raw targeted sequencing data is available via the EGA (https://ega-archive.org/), accession number: EGAD00001010874
 If there are any queries, feel free to contact me via email: ms56@sanger.ac.uk
 
 ## Objects that need to be downloaded from Mendeley Data
+These objects should be downloaded and placed in the cloned repository with the following file structure:
+
 data/Targeted_sequencing_data \
 data/annot_files \
 data/annot_files_no_dups \
@@ -26,7 +28,8 @@ If you are trying to replicate this pipeline for your own data, it is likely goi
 Coorens, T.H.H., Spencer Chapman, M., Williams, N. et al. Reconstructing phylogenetic trees from genome-wide somatic mutations in clonal samples. Nat Protoc 19, 1866–1886 (2024). https://doi.org/10.1038/s41596-024-00962-8 
 
 ## 02 Running_HDP_mutation_signature_extraction
-The scripts provided here allow this to be re-run locally, or better, on a compute farm with parallel computing capability. All input data & scripts are provided.
+The scripts provided here allow this to be re-run locally, or better, on a compute farm with parallel computing capability. All input data & scripts are provided. \
+There are comprehensive running instructions in the README file '02 Running_HDP_mutation_extraction/Running_HDP.md'
 
 ## 03 Compiling_data_for_downstream_analysis
 This is a single script that takes the data from the previous two stages, as well as a comprehensive list of sample metadata to generate the final set of data objects for all downstream analyses.
