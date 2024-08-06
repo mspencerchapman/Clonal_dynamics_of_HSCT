@@ -114,10 +114,10 @@ Pair11_loss_of_Y_details=data.frame(Chrom="Y",Pos=NA,Ref=NA,Alt=NA,mut_ref=paste
 
 
 ##2. Re-annotate drivers using whichever custom list you want to use ----
-myeloid_panel=read.csv(paste0(root_dir,"/data/Driver_lists/Illumina_trusight_myeloid_panel.csv"),header = F)$V1
-bolton_panel=read.csv(paste0(root_dir,"/data/Driver_lists/Myeloid_drivers_bolton.csv"),header=F)$V1
-all_ukbb_CH=read.csv(paste0(root_dir,"/data/Driver_lists/UKBB_drivers.csv"),header=F)$V1
-driver_list<-c(myeloid_panel,bolton_panel,all_ukbb_CH)
+myeloid_panel=read.csv(paste0(root_dir,"/data/reference_files/Driver_lists/Illumina_trusight_myeloid_panel.csv"),header = F)$V1
+bolton_panel=read.csv(paste0(root_dir,"/data/reference_files/Driver_lists/Myeloid_drivers_bolton.csv"),header=F)$V1
+all_ukbb_CH=read.csv(paste0(root_dir,"/data/reference_files/Driver_lists/UKBB_drivers.csv"),header=F)$V1
+driver_list<-sort(unique(c(myeloid_panel,bolton_panel,all_ukbb_CH)))
 
 all.muts<-lapply(all.muts,function(details) {
   details$coding_change <- ifelse(details$Type %in% c("protein_coding:exon:CDS:substitution:codon_variant:non_synonymous_codon",

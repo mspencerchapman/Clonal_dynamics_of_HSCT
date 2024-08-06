@@ -65,13 +65,15 @@ N_PAIRS=${#PAIR_NAME_ARRAY[@]}
 
 # Specify priors;
 
-# Specify prior on HSC population size;
+# Specify prior on HSC population size. 
 # Use posterior sample generated from two young individuals (KX001, KX002) from E. Mitchell et al, 2022, using sequential ABC.
-PRIOR_SAMPLE_DRIFT_FILE="/lustre/scratch126/casm/team273jn/kd7/farm_work/ABC/PPC_for_transplants/rerun_ABC_PPC/seq_ABC_KX001_KX002/seq_ABC_1_2/array_jobs_6/output/output_KX002/abc_output_round_1/abc_ridge_output/posterior_sample.txt"
+# This is the file: data/reference_files/HSC_population_posterior_sample.txt within the GitHub repo.
+PRIOR_SAMPLE_DRIFT_FILE="/lustre/scratch126/casm/team273jn/kd7/farm_work/ABC/PPC_for_transplants/rerun_ABC_PPC/seq_ABC_KX001_KX002/seq_ABC_1_2/array_jobs_6/output/output_KX002/abc_output_round_1/abc_ridge_output/HSC_population_posterior_sample.txt"
 
 # Specify prior on "driver" model parameters;
 # Use posterior sample generated from 4 oldest individuals from E. Mitchell et al, 2022, using sequential ABC.
-PRIOR_SAMPLE_DRIVERS_FILE="/lustre/scratch126/casm/team154pc/ms56/Zur_HSCT/ABC_models/ABC_Apr2022/posterior_sample.txt"
+# This is the file: data/reference_files/driver_parameter_posterior_sample.txt within the GitHub repo.
+PRIOR_SAMPLE_DRIVERS_FILE="/lustre/scratch126/casm/team154pc/ms56/Zur_HSCT/ABC_models/ABC_Apr2022/driver_parameter_posterior_sample.txt"
 
 ####################################################################################################
 

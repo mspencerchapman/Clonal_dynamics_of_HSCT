@@ -346,7 +346,7 @@ m2_sumstat_plot<-m2_sumstats%>%
        y="Log ratio of numbers of\npre-HCT coalescences\n(Recipient:Donor)")
 
 Fig14ab<-gridExtra::arrangeGrob(grobs = list(m1_sumstat_plot,m2_sumstat_plot),nrow=2)
-ggsave(filename = paste0(plots_dir,"Fig14a-b.pdf"),Fig14ab,width=7,height=4)
+ggsave(filename = paste0(plots_dir,"ExtDatFig14a-b.pdf"),Fig14ab,width=7,height=4)
 
 ## Generate Extended Data Fig. 14c ----
 m1_sumstat_plot2<-m1_sumstats%>%
@@ -369,7 +369,7 @@ m1_sumstat_plot2<-m1_sumstats%>%
   labs(x="Number of singletons in recipient phylogeny",
        y="Maximum number of peri-HCT \ncoalescences in single recipient clade")
 
-ggsave(filename = paste0(plots_dir,"Fig14c.pdf"),m1_sumstat_plot2,width=5,height=2)
+ggsave(filename = paste0(plots_dir,"ExtDatFig14c.pdf"),m1_sumstat_plot2,width=5,height=2)
 
 #========================================#
 # Review the p-values from the Posterior Predictive Checks ####
