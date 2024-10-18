@@ -269,6 +269,8 @@ combined_plot=function(df_list,metrics_to_plot=NULL) {
 # IMPORT MUTATION LISTS AS GRANGES ####
 #========================================#
 
+mutations$Class<-sapply(mutations$Class,function(x) ifelse(is.na(x),"FAIL",x))
+
 ##1. Create the GRanges object of all HCT mutations to use as a 'control'
 all_HCT_mutations_GR<-GenomicRanges::makeGRangesFromDataFrame(df=dplyr::bind_rows(all.muts.nodups)%>%mutate(Chrom=paste0("chr",Chrom)),
                                         seqnames.field="Chrom",
@@ -283,7 +285,7 @@ sample_names=lapply(stringr::str_split(list.files(vcf_dir,pattern=".vcf$"),patte
 sample_names=sapply(sample_names,function(x) {
   paste0(x[1],"_node",gsub(".vcf","", x[2]))
   })
-APOBEC_GR<-read_vcfs_as_granges(vcf_files = vcf_files,
+APOBEC_GR<-MutationalPatterns::read_vcfs_as_granges(vcf_files = vcf_files,
                      sample_names = sample_names,
                      genome = "BSgenome.Hsapiens.UCSC.hg19",
                      change_seqnames = T,
@@ -299,15 +301,15 @@ APOBEC_GR_all$hist<-"Myeloid"
 #========================================#
 
 #Run function for APOBEC mutations, using all HCT control----
-APOBEC_with_properties=get_hg19_properties(gpos=APOBEC_GR_all,control_gpos = all_HCT_mutations_GR,root=paste0(root_dir,"/data/genomic_loci_reference_files"))
+APOBEC_with_properties=get_hg19_properties(gpos=APOBEC_GR_all,control_gpos = all_HCT_mutations_GR,root=paste0(root_dir,"/data/reference_files/genomic_loci_reference_files"))
 APOBEC_with_properties_df=as.data.frame(APOBEC_with_properties)
 
 #Run function for APOBEC mutations, using no control----
-APOBEC_no_control_with_properties=get_hg19_properties(gpos=APOBEC_GR_all,root=paste0(root_dir,"/data/genomic_loci_reference_files"))
+APOBEC_no_control_with_properties=get_hg19_properties(gpos=APOBEC_GR_all,root=paste0(root_dir,"/data/reference_files/genomic_loci_reference_files"))
 APOBEC_no_control_with_properties_df=as.data.frame(APOBEC_no_control_with_properties)
 
 #Run function over all HCT mutations, using no control----
-all_HCT_mutations_with_properties=get_hg19_properties(gpos=all_HCT_mutations_GR,root=paste0(root_dir,"/data/genomic_loci_reference_files"))
+all_HCT_mutations_with_properties=get_hg19_properties(gpos=all_HCT_mutations_GR,root=paste0(root_dir,"/data/reference_files/genomic_loci_reference_files"))
 all_HCT_mutations_with_properties_df=as.data.frame(all_HCT_mutations_with_properties)
 
 #========================================#

@@ -1,4 +1,12 @@
-#Set the variables that are specific for this analysis
+# Generating phylogenies from WGS data
+
+This markdown script runs through all the steps used to generate the phylogenies.
+This version is not readily generalizable to environments outside the Wellcome Sanger Institute, as a lot of the algorithms are in-house generated. However, all the software is available.
+The generic pipeline is discussed at length within our Nature Protocols paper and this should be your first port of call if trying to adapt this pipeline to your own data and setup: \
+Coorens, T.H.H., Spencer Chapman, M., Williams, N. et al. Reconstructing phylogenetic trees from genome-wide somatic mutations in clonal samples. Nat Protoc 19, 1866–1886 (2024). https://doi.org/10.1038/s41596-024-00962-8
+
+
+## Set the variables that are specific for this analysis
 For each individual need to define: \
 1. The experiment number (used for naming files throughout the analysis) \
 2. The project number in which the bams/ variant annotation files are stored - this is specific to the Sanger insitute, so will need to be adapted if reproducing analysis. \
@@ -42,7 +50,7 @@ HIGH_DEPTH_REGIONS=/lustre/scratch124/casm/team78pipelines/reference/human/GRCh3
 GENES_TO_ANNOTATE=/lustre/scratch126/casm/team154pc/ms56/reference_files/chip_drivers.txt
 ```
 
-#Program file paths
+## Program file paths
 Define paths to all the different custom scripts used during the analysis.
 
 ```bash
@@ -56,7 +64,7 @@ TREE_BUILDING_SCRIPT=${PROGRAMS_DIR}/filtering_from_table_mix_remove.R
 REDUCE_MUTSET_SCRIPT=${PROGRAMS_DIR}/Reducing_mutset_from_MSfilters.R
 ```
 
-#Set the main study directory, and define relative file paths
+## Set the main study directory, and define relative file paths
 Set a main 'study directory' from which all other file paths are set relative to.
 
 ```bash
@@ -315,7 +323,7 @@ This script does quite a lot of work and has many options.
 |-g|--germline_addback|option to switch off the 'check_for_false_germline_calls' function|
 |-j|--just_snvs|option to only use the SNVs for tree building, useful if high indel error rate|
 |-l|--loh_and_dels|table of copy number losses to incorporate for tree building|
-|-q|--qgenes|/lustre/scratch126/casm/team154pc/ms56/reference_files/chip_drivers.txt|
+|-q|--qgenes|path to list of genes to annotate on the trees (e.g. driver genes)|
 |-t|--time|donor age at time of sampling for scaling of ultrametric tree|
 
 Now run the script on as a job on LSF using the following commands.
@@ -327,9 +335,10 @@ RUN_ID=${EXP_ID}_m40
 RUN_ID_TB=${RUN_ID}_postMS_reduced
 
 ###IF THERE IS ARE SAMPLES FROM A DIFFERENT GERMLINE BACKGROUND, THESE SHOULD BE REMOVED USING the -x flag
+MEM=24000
 bsub -o $ROOT_DIR/log_files/treebuild.log.%J -e $ROOT_DIR/err_files/treebuild.err.%J \
-    -q basement -R 'select[type==X86_64 && mem>=24000] span[hosts=1] rusage[mem=24000]' \
-    -M24000 -n1 -J tree_build \
+    -q basement -R "select[type==X86_64 && mem>=${MEM}] span[hosts=1] rusage[mem=${MEM}]" \
+    -M${MEM} -n1 -J tree_build \
     Rscript $TREE_BUILDING_SCRIPT \
     -i ${RUN_ID_TB} \
     -m ${STUDY_DIR}/mats_and_params/mats_and_params_${RUN_ID_TB} \
@@ -346,8 +355,8 @@ bsub -o $ROOT_DIR/log_files/treebuild.log.%J -e $ROOT_DIR/err_files/treebuild.er
     -x $RECIP_CHIMERISM
 
 bsub -o $ROOT_DIR/log_files/treebuild.log.%J -e $ROOT_DIR/err_files/treebuild.err.%J \
-    -q basement -R 'select[mem>=24000] span[hosts=1] rusage[mem=24000]' \
-    -M24000 -n1 -J tree_build \
+    -q basement -R "select[type==X86_64 && mem>=${MEM}] span[hosts=1] rusage[mem=${MEM}]" \
+    -M${MEM} -n1 -J tree_build \
     Rscript $TREE_BUILDING_SCRIPT \
     -i ${RUN_ID_TB} \
     -m ${STUDY_DIR}/filtering_runs/mats_and_params/mats_and_params_${RUN_ID_TB} \
@@ -364,15 +373,15 @@ bsub -o $ROOT_DIR/log_files/treebuild.log.%J -e $ROOT_DIR/err_files/treebuild.er
     -x $RECIP_CHIMERISM
 ```
 
-#IF THERE IS RECIPIENT CHIMERISM AND WANT TO INCLUDE THIS
+## Alternatively, if you want to include samples with a different germline
 Can rerun the tree without excluding samples that are from a different germline background.
 This is only useful if you want to get a list of the germline SNPs in the samples that have a different germline e.g. to see if they come from another individual from the study (due to cross-contamination) or are likely to be residual recipient chimerism.
 
 ```bash
-
+MEM=24000
 bsub -o $ROOT_DIR/log_files/treebuild.log.%J -e $ROOT_DIR/err_files/treebuild.err.%J \
-    -q long -R 'select[mem>=24000] span[hosts=1] rusage[mem=24000]' \
-    -M24000 -n1 -J tree_build \
+    -q long -R "select[mem>=${MEM}] span[hosts=1] rusage[mem=${MEM}]" \
+    -M${MEM} -n1 -J tree_build \
     Rscript $TREE_BUILDING_SCRIPT \
     -i ${RUN_ID_TB}_wr \
     -m $MATS_AND_PARAMS_DIR/mats_and_params_${RUN_ID_TB} \
@@ -388,8 +397,8 @@ bsub -o $ROOT_DIR/log_files/treebuild.log.%J -e $ROOT_DIR/err_files/treebuild.er
     -a
 
 bsub -o $ROOT_DIR/log_files/treebuild.log.%J -e $ROOT_DIR/err_files/treebuild.err.%J \
-    -q long -R 'select[mem>=24000] span[hosts=1] rusage[mem=24000]' \
-    -M24000 -n1 -J tree_build \
+    -q long -R "select[mem>=${MEM}] span[hosts=1] rusage[mem=${MEM}]" \
+    -M${MEM} -n1 -J tree_build \
     Rscript $TREE_BUILDING_SCRIPT \
     -i ${RUN_ID_TB}_wr \
     -m $MATS_AND_PARAMS_DIR/mats_and_params_${RUN_ID_TB} \
