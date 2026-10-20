@@ -78,8 +78,8 @@ exposures_df=generate_exposures_df(HDP_multi_chain_RDS_path=paste0(HDP_folder,"/
 # PLOT Separate DONOR and RECIPIENT TREE VISUALIZATIONS ####
 #========================================#
 
-pdf(paste0(plots_dir,"ExtDatFig2.pdf"),width = 7,height=7)
-par(mfrow=c(10,7))
+pdf(paste0(plots_dir,"ExtDatFig2.pdf"),width = 7,height=20)
+par(mfrow=c(10,2))
 temp=lapply(paste0("Pair_",1:10), function(Pair_new) {
   pair=Pair_metadata$Pair[Pair_metadata$Pair_new==Pair_new] #convert to the 'old' pair ID
   tree.D<-all.trees.ultra.D[[pair]]

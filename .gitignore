@@ -6,3 +6,12 @@ data/tree_and_mutation_files/details_lists.Rds
 data/tree_and_mutation_files/annot_files
 data/targeted_sequencing_data/raw_model_output
 data/targeted_sequencing_data/data_by_baitset
+
+# OS / RStudio clutter
+.DS_Store
+.Rhistory
+.RData
+.Rproj.user/
+
+# Rendered R Markdown output
+*.html

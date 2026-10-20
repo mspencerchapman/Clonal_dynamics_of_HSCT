@@ -54,8 +54,8 @@ sample_metadata<-readRDS(paste0(root_dir,"/data/metadata_files/sample_metadata_f
 
 #Read in the versions of the tree/ details object used for the Bayesian model - these are subtly different
 all_pairs<-Pair_metadata$Pair
-tree_folder=paste0(root_dir,"/data/trees_no_dups")
-annotated_muts_folder=paste0(root_dir,"/data/annot_files_no_dups")
+tree_folder=paste0(root_dir,"/data/tree_and_mutation_files/trees_no_dups")
+annotated_muts_folder=paste0(root_dir,"/data/tree_and_mutation_files/annot_files_no_dups")
 tree_paths=list.files(tree_folder,pattern="vaf_post_mix_post_dup.tree",full.names = T)
 all.trees.cc.nodups<-lapply(all_pairs,function(PairID){read.tree(grep(PairID,tree_paths,value = T))})
 names(all.trees.cc.nodups)<-all_pairs

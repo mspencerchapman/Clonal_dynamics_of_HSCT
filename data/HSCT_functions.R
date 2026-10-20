@@ -1182,6 +1182,7 @@ add_simple_labels_line=function(tree,##<< enhanced phylo returned from plot_tree
   if(length(idx)>1){
     print("Some branches have multiple variants, plotting only the first variant of each branch")
     query.value=details[[query.field]][idx]
+    cols=query.allowed.df$col[match(query.value[1],query.allowed.df$value)]
     vlabels=paste0(details[[label.field]][idx],collapse="\n")
   } else {
     query.value=details[[query.field]][idx]
@@ -1194,7 +1195,7 @@ add_simple_labels_line=function(tree,##<< enhanced phylo returned from plot_tree
   N=ifelse(length(idx)>0,1,0)
   ##Vertical offset so that labels sit slightly above the markers.
   if(N>0){
-    arrows(y0=info$yb,y1=info$yt,x0=info$x,x1=info$x,length=0,col="red",lend=1,lwd=lwd,lty=lty,...)
+    arrows(y0=info$yb,y1=info$yt,x0=info$x,x1=info$x,length=0,col=cols,lend=1,lwd=lwd,lty=lty,...)
     if(b.add.label){
       #text(rep(info$x,N),y=info$yb+0.5*(info$yt-info$yb),labels = vlabels,pos = 2,offset = 0.25,cex=cex.label)
       boxtext(info$x-1,info$yb+runif(1,min=0.35*(info$yt-info$yb),max=0.65*(info$yt-info$yb)),col.bg="white",border.bg="black",padding = c(0.5, 5),labels = vlabels,pos=2,cex=cex.label)
@@ -1212,6 +1213,7 @@ plot_tree_labels=function(tree,details,
                           ),
                           label.field="GENE",
                           cex.label=1,
+                          b.add.label=TRUE,
                           lty=1,
                           lwd=1){
   if(type=="label") {res=add_annotation(tree,
@@ -1232,6 +1234,7 @@ plot_tree_labels=function(tree,details,
                                                                 query.allowed.df = query.allowed.df,
                                                                 label.field = label.field,
                                                                 cex.label=cex.label,
+                                                                b.add.label=b.add.label,
                                                                 lty=lty,
                                                                 lwd=lwd)})}
 }

@@ -27,7 +27,7 @@ print(paste0("Importing samples with PD numbers ",paste0(PD_IDs,collapse=" & "),
 #Define how many matching samples are in the projects
 samples_by_project_list=lapply(project_IDs, function(project) {
   project_samples_list=lapply(PD_IDs,function(PD_ID) {
-    all_project_samples=list.dirs(path=paste0("/nfs/cancer_ref01/nst_links/live/",project),full.names = F,recursive = F)
+    all_project_samples=list.dirs(path=paste0("/software/SGP/nst_links/live/",project),full.names = F,recursive = F)
     PD_project_samples=grep(PD_ID,all_project_samples,value = T)
     return(PD_project_samples)
   })
@@ -41,10 +41,10 @@ print(paste(length(all_matching_samples_in_projects),"matching samples found in 
 #Define which files are ready to be imported by looking through each project for the specified PD numbers and file type
 paths_by_project_list=lapply(project_IDs, function(project) {
   project_paths_list=lapply(PD_IDs,function(PD_ID) {
-    all_project_samples=list.dirs(path=paste0("/nfs/cancer_ref01/nst_links/live/",project),full.names = F,recursive = F)
+    all_project_samples=list.dirs(path=paste0("/software/SGP/nst_links/live/",project),full.names = F,recursive = F)
     PD_project_samples=grep(PD_ID,all_project_samples,value = T)
     PD_paths_vec=sapply(PD_project_samples,function(sample) {
-      return(list.files(path=paste0("/nfs/cancer_ref01/nst_links/live/",project,"/",sample),pattern=ifelse(file_type=="SNVs","caveman_c.annot.vcf.gz$","pindel.annot.vcf.gz$"),full.names = T))
+      return(list.files(path=paste0("/software/SGP/nst_links/live/",project,"/",sample),pattern=ifelse(file_type=="SNVs","caveman_c.annot.vcf.gz$","pindel.annot.vcf.gz$"),full.names = T))
     })
     return(PD_paths_vec)
   })
@@ -82,12 +82,12 @@ if(length(new_df$samples)>0) {
 	print("Copying files from the nst_links directory")
 	if(file_type=="SNVs") {
 		for(i in 1:nrow(new_df)) {
-			file_path = paste0("/nfs/cancer_ref01/nst_links/live/",new_df$projects[i],"/",new_df$samples[i],"/",new_df$samples[i],".caveman_c.annot.vcf.gz")
+			file_path = paste0("/software/SGP/nst_links/live/",new_df$projects[i],"/",new_df$samples[i],"/",new_df$samples[i],".caveman_c.annot.vcf.gz")
 			system(paste0("cp -u ",file_path," ",output_dir))
 		}
 	} else if (file_type=="indels") {
 		for(i in 1:nrow(new_df)) {
-			file_path = paste0("/nfs/cancer_ref01/nst_links/live/",new_df$projects[i],"/",new_df$samples[i],"/",new_df$samples[i],".pindel.annot.vcf.gz")
+			file_path = paste0("/software/SGP/nst_links/live/",new_df$projects[i],"/",new_df$samples[i],"/",new_df$samples[i],".pindel.annot.vcf.gz")
 			system(paste0("cp ",file_path," ",output_dir))
 		}
 	}

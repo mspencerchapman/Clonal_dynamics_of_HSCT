@@ -295,6 +295,7 @@ all.trees.cc.nodups<-Map(tree=all.trees.uncorrected,details=all.muts,remove_samp
   tree_SNV_c<-get_corrected_tree(tree_SNV,details,sensitivity_df = sens_df,include_SNVs = T,include_indels = F)
   tree_SNV_c<-drop.tip(tree_SNV_c,remove_samples)
 })
+
 par(mfrow=c(5,2))
 temp=lapply(all.trees.cc.nodups,plot.phylo,show.tip.label=F,direction="downwards")
 

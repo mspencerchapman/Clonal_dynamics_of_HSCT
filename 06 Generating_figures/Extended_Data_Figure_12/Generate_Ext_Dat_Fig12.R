@@ -54,8 +54,8 @@ sample_metadata<-readRDS(paste0(root_dir,"/data/metadata_files/sample_metadata_f
 
 #Read in the versions of the tree/ details object used for the Bayesian model - these are subtly different
 all_pairs<-Pair_metadata$Pair
-tree_folder=paste0(root_dir,"/data/trees_no_dups")
-annotated_muts_folder=paste0(root_dir,"/data/annot_files_no_dups")
+tree_folder=paste0(root_dir,"/data/tree_and_mutation_files/trees_no_dups")
+annotated_muts_folder=paste0(root_dir,"/data/tree_and_mutation_files/annot_files_no_dups")
 tree_paths=list.files(tree_folder,pattern="vaf_post_mix_post_dup.tree",full.names = T)
 all.trees.cc.nodups<-lapply(all_pairs,function(PairID){read.tree(grep(PairID,tree_paths,value = T))})
 names(all.trees.cc.nodups)<-all_pairs
@@ -91,7 +91,7 @@ CN_change_df=read.csv(paste0(root_dir,"/data/SV_and_CNA_data/Copy_number_changes
 bulk_smry_all<-readr::read_csv(file = paste0(root_dir,"/data/targeted_sequencing_data/targeted_sequencing_metadata.csv"))
 
 #Read in other data objects
-annotated_drivers_df<-read_csv(paste0(root_dir,"/data/Possible_drivers_annotated.csv"))[,c("mut_ref","node","Gene","variant_ID","Decision")]
+annotated_drivers_df<-read_csv(paste0(root_dir,"/data/tree_and_mutation_files/Possible_drivers_annotated.csv"))[,c("mut_ref","node","Gene","variant_ID","Decision")]
 remove_names=function(x) {attr(x,"names")<-NULL;return(x)}
 
 #========================================#
@@ -752,6 +752,28 @@ driver_cellfracs_wider_df<-driver_cellfracs_df%>%
            (median_Monocytes>0.0005|median_Granulocytes>0.0005)&
            Gene%in%c("DNMT3A","TET2"))%>%
   mutate(Pair=factor(Pair,levels=paste("Pair",1:10,sep="_")))
+
+#Print the T vs Monocyte fraction of TET2 mutant clones across individuals
+TET2_Tcell_vs_Mono<-driver_cellfracs_df%>%
+  bind_rows()%>%
+  left_join(bulk_smry_all%>%dplyr::select(PD_number,tissueID,individual_type,cell_type)%>%filter(!duplicated(.)))%>%
+  dplyr::select(Pair,PD_number,individual_type,cell_type,median,lowerCI,upperCI,variant_ID,Gene)%>%
+  pivot_wider(names_from=c("cell_type"),values_from=c("lowerCI","median","upperCI"))%>%
+  filter(Gene=="TET2")%>%
+  ggplot(aes(x=median_Monocytes,y=median_T_cells))+
+  geom_abline(slope=1,linetype=2)+
+  geom_linerange(aes(xmin=lowerCI_Monocytes,xmax=upperCI_Monocytes,y=median_T_cells),alpha=0.4,linewidth=0.4)+
+  geom_linerange(aes(ymin=lowerCI_T_cells,ymax=upperCI_T_cells,x=median_Monocytes),alpha=0.4,linewidth=0.4)+
+  geom_point(size=0.4)+
+  scale_x_log10()+
+  scale_y_log10()+
+  theme_bw()+
+  my_theme+
+  labs(x="TET2 mut fraction\nin Monocytes",y="TET2 mut fraction\nin T cells")
+
+ggsave(filename = paste0(plots_dir,"TET2_Tcell_vs_Mono.pdf"),TET2_Tcell_vs_Mono,device = "pdf",width=1.8,height = 2)
+
+
 
 #Generate a df to display confidence intervals as quadrilaterals within geom_polygon
 confidence_interval_df<-lapply(1:nrow(driver_cellfracs_wider_df),function(i) {
